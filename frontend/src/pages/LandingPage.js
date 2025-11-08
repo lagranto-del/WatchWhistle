@@ -85,7 +85,7 @@ const LandingPage = () => {
       <style jsx>{`
         .landing-page {
           min-height: 100vh;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: #0a0a0a;
         }
 
         .hero-section {
@@ -93,6 +93,20 @@ const LandingPage = () => {
           padding: 0 24px;
           display: flex;
           flex-direction: column;
+          background-image: url('https://images.unsplash.com/photo-1643553517154-24eb7fd86437?q=80&w=2000');
+          background-size: cover;
+          background-position: center;
+          position: relative;
+        }
+
+        .theater-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%);
+          z-index: 1;
         }
 
         .navbar {
@@ -103,6 +117,8 @@ const LandingPage = () => {
           max-width: 1200px;
           width: 100%;
           margin: 0 auto;
+          position: relative;
+          z-index: 2;
         }
 
         .logo {
@@ -122,16 +138,50 @@ const LandingPage = () => {
           justify-content: center;
           align-items: center;
           text-align: center;
-          max-width: 800px;
+          max-width: 900px;
           margin: 0 auto;
+          position: relative;
+          z-index: 2;
         }
 
-        .hero-content h1 {
-          font-size: clamp(40px, 8vw, 72px);
+        .theater-screen {
+          background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+          border: 8px solid #333;
+          border-radius: 8px;
+          padding: 60px 100px;
+          margin-bottom: 60px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+          position: relative;
+        }
+
+        .theater-screen::before {
+          content: '';
+          position: absolute;
+          top: -30px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 40px;
+          height: 40px;
+          background: #ef4444;
+          border-radius: 50%;
+          box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+        }
+
+        .screen-title {
+          font-size: clamp(48px, 8vw, 72px);
+          font-weight: 700;
+          color: #ef4444;
+          margin: 0;
+          line-height: 1.1;
+          text-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+        }
+
+        .hero-heading {
+          font-size: clamp(28px, 5vw, 42px);
           font-weight: 700;
           color: white;
-          margin-bottom: 24px;
-          line-height: 1.1;
+          margin-bottom: 20px;
+          line-height: 1.2;
         }
 
         .hero-subtitle {
