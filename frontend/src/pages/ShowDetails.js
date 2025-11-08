@@ -283,6 +283,31 @@ const ShowDetails = ({ user, onLogout }) => {
           background: #f3f4f6;
         }
 
+        .nav-actions {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .home-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 20px;
+          background: #ef4444;
+          border: none;
+          border-radius: 12px;
+          color: white;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background-color 0.2s;
+          font-family: 'Inter', sans-serif;
+        }
+
+        .home-btn:hover {
+          background: #dc2626;
+        }
+
         .delete-btn {
           color: #ef4444;
         }
