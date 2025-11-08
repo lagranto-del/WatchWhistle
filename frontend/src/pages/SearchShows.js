@@ -183,7 +183,7 @@ const SearchShows = ({ user, onLogout }) => {
       <style jsx>{`
         .search-page {
           min-height: 100vh;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
           padding-bottom: 48px;
         }
 
@@ -220,9 +220,10 @@ const SearchShows = ({ user, onLogout }) => {
           display: flex;
           align-items: center;
           gap: 12px;
-          color: #667eea;
+          color: #ef4444;
           font-size: 22px;
           font-weight: 700;
+          cursor: pointer;
           font-family: 'Space Grotesk', sans-serif;
         }
 
