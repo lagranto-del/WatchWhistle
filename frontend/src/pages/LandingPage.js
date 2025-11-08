@@ -228,18 +228,17 @@ const LandingPage = () => {
 
         .feature-card:hover {
           transform: translateY(-8px);
-          box-shadow: 0 12px 24px rgba(102, 126, 234, 0.15);
+          box-shadow: 0 12px 24px rgba(239, 68, 68, 0.15);
         }
 
         .feature-icon {
           width: 64px;
           height: 64px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: rgba(239, 68, 68, 0.1);
           border-radius: 16px;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: white;
           margin-bottom: 24px;
         }
 
