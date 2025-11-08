@@ -426,11 +426,14 @@ const Dashboard = ({ user, onLogout }) => {
           max-width: 1400px;
           margin: 0 auto;
           padding: 48px 32px;
+          position: relative;
+          z-index: 1;
         }
 
         .welcome-section {
           margin-bottom: 48px;
           color: white;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         .welcome-section h1 {
