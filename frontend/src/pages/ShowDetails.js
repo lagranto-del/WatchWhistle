@@ -262,7 +262,7 @@ const ShowDetails = ({ user, onLogout }) => {
               </div>
               <button
                 className={`watch-btn ${episode.watched ? 'watched' : ''}`}
-                onClick={() => toggleWatched(episode.id, episode.watched)}
+                onClick={() => toggleWatched(episode.id, episode.watched, episode.name)}
                 data-testid={`watch-btn-${episode.id}`}
               >
                 <Check size={20} />
