@@ -80,7 +80,13 @@ const SearchShows = ({ user, onLogout }) => {
           <Tv size={28} color="#ef4444" />
           <span>WatchWhistle</span>
         </div>
-        <div className="nav-spacer"></div>
+        <button 
+          className="home-btn" 
+          onClick={() => navigate('/dashboard')}
+          data-testid="home-button"
+        >
+          Home
+        </button>
       </nav>
 
       <div className="search-content">
