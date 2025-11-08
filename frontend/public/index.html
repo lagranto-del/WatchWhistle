@@ -19,8 +19,28 @@
             /* Hide the default Emergent badge */
             #emergent-badge {
                 display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
             }
         </style>
+        <script>
+            // Replace Emergent badge with WatchWhistle badge
+            window.addEventListener('load', function() {
+                setTimeout(function() {
+                    var emergentBadge = document.getElementById('emergent-badge');
+                    if (emergentBadge) {
+                        emergentBadge.style.display = 'none';
+                        emergentBadge.remove();
+                    }
+                    
+                    // Show our custom badge
+                    var customBadge = document.getElementById('watchwhistle-badge');
+                    if (customBadge) {
+                        customBadge.style.display = 'flex';
+                    }
+                }, 100);
+            });
+        </script>
         <!--
         These two scripts have been added for the testing, please do not edit or remove them
         -->
