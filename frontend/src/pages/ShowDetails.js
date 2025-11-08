@@ -119,14 +119,23 @@ const ShowDetails = ({ user, onLogout }) => {
           <Tv size={28} color="#ef4444" />
           <span>WatchWhistle</span>
         </div>
-        <button 
-          className="delete-btn" 
-          onClick={removeShow}
-          data-testid="delete-show-button"
-        >
-          <Trash2 size={20} />
-          Remove
-        </button>
+        <div className="nav-actions">
+          <button 
+            className="home-btn" 
+            onClick={() => navigate('/dashboard')}
+            data-testid="home-button"
+          >
+            Home
+          </button>
+          <button 
+            className="delete-btn" 
+            onClick={removeShow}
+            data-testid="delete-show-button"
+          >
+            <Trash2 size={20} />
+            Remove
+          </button>
+        </div>
       </nav>
 
       {/* Show Header */}
