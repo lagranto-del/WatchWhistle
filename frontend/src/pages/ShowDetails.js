@@ -46,14 +46,40 @@ const ShowDetails = ({ user, onLogout }) => {
     }
   };
 
-  const toggleWatched = async (episodeId, currentStatus) => {
+  const toggleWatched = async (episodeId, currentStatus, episodeName) => {
+    const newStatus = !currentStatus;
+    
     try {
-      await api.put(`/episodes/${episodeId}/watched`, { watched: !currentStatus });
-      toast.success(!currentStatus ? 'Marked as watched' : 'Marked as unwatched');
+      await api.put(`/episodes/${episodeId}/watched`, { watched: newStatus });
+      
+      // Show toast with undo option
+      if (newStatus) {
+        toast.success(`Marked "${episodeName}" as watched`, {
+          duration: 5000,
+          action: {
+            label: 'Undo',
+            onClick: () => undoWatchStatus(episodeId, episodeName)
+          }
+        });
+      } else {
+        toast.success(`Marked "${episodeName}" as unwatched`);
+      }
+      
       loadShowData();
     } catch (error) {
       console.error('Failed to update episode:', error);
       toast.error('Failed to update episode');
+    }
+  };
+
+  const undoWatchStatus = async (episodeId, episodeName) => {
+    try {
+      await api.put(`/episodes/${episodeId}/watched`, { watched: false });
+      toast.success(`Undone: "${episodeName}" marked as unwatched`);
+      loadShowData();
+    } catch (error) {
+      console.error('Failed to undo:', error);
+      toast.error('Failed to undo');
     }
   };
 
