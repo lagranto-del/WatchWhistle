@@ -73,8 +73,8 @@ const Dashboard = ({ user, onLogout }) => {
       {/* Header */}
       <nav className="dashboard-nav">
         <div className="nav-left">
-          <div className="logo">
-            <Tv size={28} />
+          <div className="logo" onClick={() => navigate('/dashboard')} data-testid="home-logo">
+            <Tv size={28} color="#ef4444" />
             <span>WatchWhistle</span>
           </div>
         </div>
