@@ -50,7 +50,7 @@ const LandingPage = () => {
         <div className="features-grid">
           <div className="feature-card" data-testid="feature-search">
             <div className="feature-icon">
-              <Search size={32} />
+              <Search size={32} color="#ef4444" />
             </div>
             <h3>Search & Add Shows</h3>
             <p>Easily find and add your favorite TV shows from a vast database</p>
@@ -58,7 +58,7 @@ const LandingPage = () => {
 
           <div className="feature-card" data-testid="feature-notifications">
             <div className="feature-icon">
-              <Bell size={32} />
+              <Bell size={32} color="#ef4444" />
             </div>
             <h3>Smart Notifications</h3>
             <p>Get notified when new episodes of your shows are about to air</p>
@@ -66,7 +66,7 @@ const LandingPage = () => {
 
           <div className="feature-card" data-testid="feature-tracking">
             <div className="feature-icon">
-              <Tv size={32} />
+              <Tv size={32} color="#ef4444" />
             </div>
             <h3>Track Episodes</h3>
             <p>Mark episodes as watched and keep track of your progress</p>
@@ -74,7 +74,7 @@ const LandingPage = () => {
 
           <div className="feature-card" data-testid="feature-rating">
             <div className="feature-icon">
-              <Star size={32} />
+              <Star size={32} color="#ef4444" />
             </div>
             <h3>Rate Shows</h3>
             <p>Rate your favorite shows and keep a personalized watchlist</p>
