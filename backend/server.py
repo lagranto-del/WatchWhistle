@@ -169,6 +169,9 @@ async def create_session(request: Request, response: Response):
         # Convert ISO strings to datetime if needed
         if isinstance(user_doc.get("created_at"), str):
             user_doc["created_at"] = datetime.fromisoformat(user_doc["created_at"])
+            # Ensure timezone-aware
+            if user_doc["created_at"].tzinfo is None:
+                user_doc["created_at"] = user_doc["created_at"].replace(tzinfo=timezone.utc)
         user = User(**user_doc)
     
     # Create session
