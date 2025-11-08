@@ -14,7 +14,7 @@ const LandingPage = () => {
         <nav className="navbar">
           <div className="logo">
             <Tv size={32} />
-            <span>ShowTracker</span>
+            <span>WatchWhistle</span>
           </div>
           <button 
             className="btn btn-outline" 
