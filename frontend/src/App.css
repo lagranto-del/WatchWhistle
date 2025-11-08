@@ -68,8 +68,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #ef4444;
   color: white;
+}
+
+.btn-primary:hover {
+  background: #dc2626;
 }
 
 .btn-secondary {
