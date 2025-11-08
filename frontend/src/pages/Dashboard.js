@@ -70,14 +70,33 @@ const Dashboard = ({ user, onLogout }) => {
     }
   };
 
-  const markAsWatched = async (episodeId) => {
+  const markAsWatched = async (episodeId, episodeName, showName) => {
     try {
       await api.put(`/episodes/${episodeId}/watched`, { watched: true });
-      toast.success('Episode marked as watched');
+      
+      toast.success(`Marked "${showName} - ${episodeName}" as watched`, {
+        duration: 5000,
+        action: {
+          label: 'Undo',
+          onClick: () => undoMarkAsWatched(episodeId, episodeName, showName)
+        }
+      });
+      
       loadData();
     } catch (error) {
       console.error('Failed to mark as watched:', error);
       toast.error('Failed to update episode');
+    }
+  };
+
+  const undoMarkAsWatched = async (episodeId, episodeName, showName) => {
+    try {
+      await api.put(`/episodes/${episodeId}/watched`, { watched: false });
+      toast.success(`Undone: "${showName} - ${episodeName}" marked as unwatched`);
+      loadData();
+    } catch (error) {
+      console.error('Failed to undo:', error);
+      toast.error('Failed to undo');
     }
   };
 
