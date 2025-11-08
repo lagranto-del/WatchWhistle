@@ -124,7 +124,12 @@ const Dashboard = ({ user, onLogout }) => {
           </button>
           <button 
             className="nav-btn notification-btn" 
-            onClick={() => setShowNotifications(!showNotifications)}
+            onClick={() => {
+              if (unreadCount > 0 && !showNotifications) {
+                playWhistle();
+              }
+              setShowNotifications(!showNotifications);
+            }}
             data-testid="notifications-button"
           >
             <Bell size={20} />
