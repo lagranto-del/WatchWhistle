@@ -268,7 +268,6 @@ const Dashboard = ({ user, onLogout }) => {
           position: sticky;
           top: 0;
           z-index: 100;
-          position: relative;
         }
 
         .nav-left, .nav-right {
