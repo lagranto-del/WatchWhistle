@@ -459,10 +459,12 @@ const Dashboard = ({ user, onLogout }) => {
           font-weight: 700;
           margin-bottom: 24px;
           color: white;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         .empty-state-card {
-          background: white;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(12px);
           border-radius: 16px;
           padding: 64px 32px;
           text-align: center;
