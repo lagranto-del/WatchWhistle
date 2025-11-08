@@ -11,9 +11,10 @@ const LandingPage = () => {
     <div className="landing-page">
       {/* Hero Section */}
       <div className="hero-section">
+        <div className="theater-overlay"></div>
         <nav className="navbar">
           <div className="logo">
-            <Tv size={32} />
+            <Tv size={32} color="#ef4444" />
             <span>WatchWhistle</span>
           </div>
           <button 
@@ -26,7 +27,10 @@ const LandingPage = () => {
         </nav>
 
         <div className="hero-content">
-          <h1 data-testid="hero-title">Never Miss Your Favorite Shows</h1>
+          <div className="theater-screen">
+            <h1 data-testid="hero-title" className="screen-title">WatchWhistle</h1>
+          </div>
+          <h2 className="hero-heading">Never Miss Your Favorite Shows</h2>
           <p className="hero-subtitle" data-testid="hero-subtitle">
             Track your favorite TV shows and get notified when new episodes air
           </p>
