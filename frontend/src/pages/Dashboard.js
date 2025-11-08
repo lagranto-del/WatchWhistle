@@ -491,7 +491,7 @@ const Dashboard = ({ user, onLogout }) => {
         .show-name {
           font-size: 16px;
           font-weight: 600;
-          color: #667eea;
+          color: #ef4444;
           margin-bottom: 8px;
         }
 
