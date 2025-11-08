@@ -254,6 +254,49 @@ const LandingPage = () => {
           line-height: 1.6;
           font-size: 16px;
         }
+
+        @media (max-width: 768px) {
+          .navbar {
+            padding: 16px 0;
+          }
+
+          .logo {
+            font-size: 18px;
+          }
+
+          .logo svg {
+            width: 24px;
+            height: 24px;
+          }
+
+          .btn-outline {
+            padding: 8px 16px;
+            font-size: 14px;
+          }
+
+          .theater-screen {
+            padding: 40px 30px;
+            margin-bottom: 40px;
+          }
+
+          .theater-screen::before {
+            width: 30px;
+            height: 30px;
+          }
+
+          .hero-heading {
+            font-size: 24px;
+          }
+
+          .features-section {
+            padding: 60px 16px;
+          }
+
+          .features-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+          }
+        }
       `}</style>
     </div>
   );
