@@ -410,6 +410,9 @@ async def get_notifications(user: User = Depends(get_current_user)):
     for notif in notifications:
         if isinstance(notif.get("created_at"), str):
             notif["created_at"] = datetime.fromisoformat(notif["created_at"])
+            # Ensure timezone-aware
+            if notif["created_at"].tzinfo is None:
+                notif["created_at"] = notif["created_at"].replace(tzinfo=timezone.utc)
     
     return notifications
 
