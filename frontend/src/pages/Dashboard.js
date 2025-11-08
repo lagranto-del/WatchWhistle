@@ -253,23 +253,8 @@ const Dashboard = ({ user, onLogout }) => {
       <style jsx>{`
         .dashboard {
           min-height: 100vh;
-          background-image: url('https://images.unsplash.com/photo-1643553517154-24eb7fd86437?q=80&w=2000');
-          background-size: cover;
-          background-position: center;
-          background-attachment: fixed;
-          position: relative;
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
           padding-bottom: 48px;
-        }
-
-        .dashboard::before {
-          content: '';
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.7) 100%);
-          z-index: 0;
         }
 
         .dashboard-nav {
