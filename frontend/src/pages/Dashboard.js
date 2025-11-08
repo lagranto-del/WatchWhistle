@@ -75,7 +75,7 @@ const Dashboard = ({ user, onLogout }) => {
         <div className="nav-left">
           <div className="logo">
             <Tv size={28} />
-            <span>ShowTracker</span>
+            <span>WatchWhistle</span>
           </div>
         </div>
         <div className="nav-right">
