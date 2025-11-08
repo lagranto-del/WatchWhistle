@@ -271,6 +271,9 @@ async def get_favorite_shows(user: User = Depends(get_current_user)):
     for show in shows:
         if isinstance(show.get("added_at"), str):
             show["added_at"] = datetime.fromisoformat(show["added_at"])
+            # Ensure timezone-aware
+            if show["added_at"].tzinfo is None:
+                show["added_at"] = show["added_at"].replace(tzinfo=timezone.utc)
     
     return shows
 
