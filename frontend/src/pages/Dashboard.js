@@ -253,7 +253,7 @@ const Dashboard = ({ user, onLogout }) => {
       <style jsx>{`
         .dashboard {
           min-height: 100vh;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
           padding-bottom: 48px;
         }
 
@@ -280,10 +280,11 @@ const Dashboard = ({ user, onLogout }) => {
           display: flex;
           align-items: center;
           gap: 12px;
-          color: #667eea;
+          color: #ef4444;
           font-size: 22px;
           font-weight: 700;
           font-family: 'Space Grotesk', sans-serif;
+          cursor: pointer;
         }
 
         .nav-btn {
