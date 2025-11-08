@@ -251,7 +251,7 @@ const Dashboard = ({ user, onLogout }) => {
                     </div>
                     <button 
                       className="btn btn-success btn-sm" 
-                      onClick={() => markAsWatched(episode.id)}
+                      onClick={() => markAsWatched(episode.id, episode.name, episode.show_name)}
                       data-testid={`mark-watched-${episode.id}`}
                     >
                       <Check size={16} />
