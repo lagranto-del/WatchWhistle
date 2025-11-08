@@ -72,8 +72,12 @@ const SearchShows = ({ user, onLogout }) => {
           <ArrowLeft size={20} />
           Back
         </button>
-        <div className="logo">
-          <Tv size={28} />
+        <div 
+          className="logo" 
+          onClick={() => navigate('/dashboard')}
+          data-testid="home-logo"
+        >
+          <Tv size={28} color="#ef4444" />
           <span>WatchWhistle</span>
         </div>
         <div className="nav-spacer"></div>
