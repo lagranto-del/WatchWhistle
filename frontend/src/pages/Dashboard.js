@@ -49,7 +49,18 @@ const Dashboard = ({ user, onLogout }) => {
       ]);
       
       setUpcomingEpisodes(upcomingRes.data);
-      setNotifications(notifRes.data);
+      
+      // Check for new notifications and play whistle
+      const newNotifications = notifRes.data;
+      const currentUnreadCount = newNotifications.filter(n => !n.read).length;
+      
+      if (!loading && currentUnreadCount > previousUnreadCount && currentUnreadCount > 0) {
+        playWhistle();
+        toast.success(`${currentUnreadCount} new notification${currentUnreadCount > 1 ? 's' : ''}!`);
+      }
+      
+      setPreviousUnreadCount(currentUnreadCount);
+      setNotifications(newNotifications);
       setFavorites(favRes.data);
     } catch (error) {
       console.error('Failed to load data:', error);
