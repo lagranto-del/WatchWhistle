@@ -347,6 +347,9 @@ async def get_show_episodes(show_id: str, user: User = Depends(get_current_user)
     for episode in episodes:
         if isinstance(episode.get("watched_at"), str):
             episode["watched_at"] = datetime.fromisoformat(episode["watched_at"])
+            # Ensure timezone-aware
+            if episode["watched_at"].tzinfo is None:
+                episode["watched_at"] = episode["watched_at"].replace(tzinfo=timezone.utc)
     
     return episodes
 
