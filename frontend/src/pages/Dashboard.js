@@ -336,7 +336,7 @@ const Dashboard = ({ user, onLogout }) => {
           width: 40px;
           height: 40px;
           border-radius: 50%;
-          border: 2px solid #667eea;
+          border: 2px solid #ef4444;
         }
 
         .notifications-panel {
