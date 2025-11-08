@@ -74,7 +74,7 @@ const SearchShows = ({ user, onLogout }) => {
         </button>
         <div className="logo">
           <Tv size={28} />
-          <span>ShowTracker</span>
+          <span>WatchWhistle</span>
         </div>
         <div className="nav-spacer"></div>
       </nav>
