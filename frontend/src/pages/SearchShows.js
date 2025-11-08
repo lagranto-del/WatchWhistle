@@ -414,16 +414,33 @@ const SearchShows = ({ user, onLogout }) => {
             padding: 12px 16px;
           }
 
+          .logo span {
+            display: none;
+          }
+
+          .home-btn {
+            padding: 8px 16px;
+            font-size: 14px;
+          }
+
           .search-content {
             padding: 24px 16px;
+          }
+
+          .search-header h1 {
+            font-size: 32px;
           }
 
           .search-form {
             flex-direction: column;
           }
 
-          .nav-spacer {
-            display: none;
+          .results-section {
+            padding: 24px 16px;
+          }
+
+          .results-grid {
+            grid-template-columns: 1fr;
           }
         }
       `}</style>
