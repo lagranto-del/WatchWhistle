@@ -39,7 +39,7 @@ const LandingPage = () => {
             onClick={handleLogin}
             data-testid="get-started-button"
           >
-            Get Started Free
+            Get Started
           </button>
         </div>
       </div>
