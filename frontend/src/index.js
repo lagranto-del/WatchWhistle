@@ -3,7 +3,9 @@ import ReactDOM from "react-dom/client";
 import "@/index.css";
 import App from "@/App";
 
-// Register Service Worker for PWA
+// Service Worker disabled - causing caching issues with PWA
+// Will re-enable after testing
+/*
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/service-worker.js')
@@ -11,6 +13,7 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.log('SW registration failed'));
   });
 }
+*/
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
