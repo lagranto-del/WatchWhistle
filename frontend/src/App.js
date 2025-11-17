@@ -116,6 +116,10 @@ function App() {
             )
           }
         />
+        <Route
+          path="/support"
+          element={<Support />}
+        />
       </Routes>
     </BrowserRouter>
   );
