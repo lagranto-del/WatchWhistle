@@ -121,6 +121,10 @@ function App() {
           path="/support"
           element={<Support />}
         />
+        <Route
+          path="/marketing"
+          element={<Marketing />}
+        />
       </Routes>
     </BrowserRouter>
   );
