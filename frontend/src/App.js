@@ -5,6 +5,7 @@ import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import SearchShows from "./pages/SearchShows";
 import ShowDetails from "./pages/ShowDetails";
+import Support from "./pages/Support";
 import "./App.css";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
