@@ -7,6 +7,7 @@ import SearchShows from "./pages/SearchShows";
 import ShowDetails from "./pages/ShowDetails";
 import Support from "./pages/Support";
 import Marketing from "./pages/Marketing";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import "./App.css";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
