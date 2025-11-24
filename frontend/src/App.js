@@ -126,6 +126,10 @@ function App() {
           path="/marketing"
           element={<Marketing />}
         />
+        <Route
+          path="/privacy"
+          element={<PrivacyPolicy />}
+        />
       </Routes>
     </BrowserRouter>
   );
