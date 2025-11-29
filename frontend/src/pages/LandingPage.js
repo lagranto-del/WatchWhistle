@@ -3,7 +3,12 @@ import { Tv, Bell, Star, Search } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 const LandingPage = () => {
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    try {
+      await Haptics.impact({ style: ImpactStyle.Medium });
+    } catch (e) {
+      // Haptics not available on web
+    }
     const redirectUrl = `${window.location.origin}/dashboard`;
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
