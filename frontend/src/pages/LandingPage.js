@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tv, Bell, Star, Search } from 'lucide-react';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 const LandingPage = () => {
   const handleLogin = () => {
