@@ -74,6 +74,9 @@ const Dashboard = ({ user, onLogout }) => {
 
   const markAsWatched = async (episodeId, episodeName, showName) => {
     try {
+      // Native haptic feedback
+      await Haptics.impact({ style: ImpactStyle.Medium });
+      
       await api.put(`/episodes/${episodeId}/watched`, { watched: true });
       
       toast.success(`Marked "${showName} - ${episodeName}" as watched`, {
