@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../App';
-import { Tv, Search, Bell, LogOut, Calendar, Clock, Check } from 'lucide-react';
+import { Tv, Search, Bell, LogOut, Calendar, Clock, Check, Share2 } from 'lucide-react';
 import { toast, Toaster } from 'sonner';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Share } from '@capacitor/share';
 
 const Dashboard = ({ user, onLogout }) => {
   const navigate = useNavigate();
