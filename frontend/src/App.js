@@ -8,6 +8,7 @@ import ShowDetails from "./pages/ShowDetails";
 import Support from "./pages/Support";
 import Marketing from "./pages/Marketing";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import { StatusBar, Style } from '@capacitor/status-bar';
 import "./App.css";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -24,6 +25,17 @@ function App() {
   const [processingAuth, setProcessingAuth] = useState(false);
 
   useEffect(() => {
+    // Configure status bar for iOS
+    const configureStatusBar = async () => {
+      try {
+        await StatusBar.setStyle({ style: Style.Light });
+        await StatusBar.setBackgroundColor({ color: '#ef4444' });
+      } catch (e) {
+        // Status bar not available on web
+      }
+    };
+    configureStatusBar();
+
     const checkAuth = async () => {
       // Check for session_id in URL fragment
       const hash = window.location.hash;

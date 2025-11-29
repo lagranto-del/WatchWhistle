@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../App';
 import { Tv, Search, ArrowLeft, Plus, Check } from 'lucide-react';
 import { toast, Toaster } from 'sonner';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 const SearchShows = ({ user, onLogout }) => {
   const navigate = useNavigate();
@@ -14,6 +15,10 @@ const SearchShows = ({ user, onLogout }) => {
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!query.trim()) return;
+
+    try {
+      await Haptics.impact({ style: ImpactStyle.Light });
+    } catch (e) {}
 
     setLoading(true);
     try {
@@ -28,6 +33,10 @@ const SearchShows = ({ user, onLogout }) => {
   };
 
   const addToFavorites = async (showData) => {
+    try {
+      await Haptics.impact({ style: ImpactStyle.Medium });
+    } catch (e) {}
+
     try {
       const show = showData.show;
       await api.post('/shows/favorites', {
@@ -66,7 +75,10 @@ const SearchShows = ({ user, onLogout }) => {
       <nav className="search-nav">
         <button 
           className="back-btn" 
-          onClick={() => navigate('/dashboard')}
+          onClick={async () => {
+            try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) {}
+            navigate('/dashboard');
+          }}
           data-testid="back-button"
         >
           <ArrowLeft size={20} />
@@ -74,7 +86,10 @@ const SearchShows = ({ user, onLogout }) => {
         </button>
         <div 
           className="logo" 
-          onClick={() => navigate('/dashboard')}
+          onClick={async () => {
+            try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) {}
+            navigate('/dashboard');
+          }}
           data-testid="home-logo"
         >
           <Tv size={28} color="#ef4444" />
@@ -82,7 +97,10 @@ const SearchShows = ({ user, onLogout }) => {
         </div>
         <button 
           className="home-btn" 
-          onClick={() => navigate('/dashboard')}
+          onClick={async () => {
+            try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) {}
+            navigate('/dashboard');
+          }}
           data-testid="home-button"
         >
           Home
@@ -250,10 +268,6 @@ const SearchShows = ({ user, onLogout }) => {
           font-weight: 700;
           cursor: pointer;
           font-family: 'Space Grotesk', sans-serif;
-        }
-
-        .nav-spacer {
-          width: 100px;
         }
 
         .search-content {
