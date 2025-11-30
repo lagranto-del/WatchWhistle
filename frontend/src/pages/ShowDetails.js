@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../App';
-import { ArrowLeft, Tv, Star, Trash2, Check } from 'lucide-react';
+import { ArrowLeft, Tv, Star, Trash2, Check, Share2 } from 'lucide-react';
 import { toast, Toaster } from 'sonner';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Share } from '@capacitor/share';
 
 const ShowDetails = ({ user, onLogout }) => {
   const navigate = useNavigate();
