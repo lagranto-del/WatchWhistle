@@ -315,7 +315,7 @@ const ShowDetails = ({ user, onLogout }) => {
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .back-btn, .delete-btn {
+        .back-btn, .delete-btn, .share-btn {
           display: flex;
           align-items: center;
           gap: 8px;
@@ -330,7 +330,7 @@ const ShowDetails = ({ user, onLogout }) => {
           font-family: 'Inter', sans-serif;
         }
 
-        .back-btn:hover, .delete-btn:hover {
+        .back-btn:hover, .delete-btn:hover, .share-btn:hover {
           background: #f3f4f6;
         }
 
