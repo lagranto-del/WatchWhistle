@@ -8,8 +8,17 @@ import ShowDetails from "./pages/ShowDetails";
 import Support from "./pages/Support";
 import Marketing from "./pages/Marketing";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
-import { StatusBar, Style } from '@capacitor/status-bar';
 import "./App.css";
+
+// Capacitor imports with error handling
+let StatusBar, Style;
+try {
+  const statusBarModule = require('@capacitor/status-bar');
+  StatusBar = statusBarModule.StatusBar;
+  Style = statusBarModule.Style;
+} catch (e) {
+  // Running on web, Capacitor not available
+}
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
