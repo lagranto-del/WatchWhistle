@@ -98,6 +98,21 @@ const ShowDetails = ({ user, onLogout }) => {
     }
   };
 
+  const shareShow = async () => {
+    try {
+      await Haptics.impact({ style: ImpactStyle.Light });
+      await Share.share({
+        title: `Check out ${show.name}`,
+        text: `I'm watching ${show.name} on WatchWhistle! ${show.summary ? stripHtml(show.summary).slice(0, 100) + '...' : ''}`,
+        url: window.location.href,
+        dialogTitle: 'Share with friends'
+      });
+    } catch (error) {
+      // User cancelled or share not available
+      console.log('Share cancelled or unavailable');
+    }
+  };
+
   const stripHtml = (html) => {
     if (!html) return '';
     return html.replace(/<[^>]*>/g, '');
