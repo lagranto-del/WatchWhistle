@@ -164,6 +164,14 @@ const ShowDetails = ({ user, onLogout }) => {
         </div>
         <div className="nav-actions">
           <button 
+            className="share-btn" 
+            onClick={shareShow}
+            data-testid="share-show-button"
+          >
+            <Share2 size={20} />
+            Share
+          </button>
+          <button 
             className="home-btn" 
             onClick={() => navigate('/dashboard')}
             data-testid="home-button"
