@@ -24,7 +24,7 @@ When you add WatchWhistle to your iPhone home screen and open it, you only see a
 
 ### Step 3: Unregister Service Worker (Important!)
 1. Open **Safari** on iPhone
-2. Go to: `https://watchreminder.preview.emergentagent.com`
+2. Go to: `https://watchnotify.preview.emergentagent.com`
 3. Wait for page to load completely
 4. The service worker should be disabled now
 
@@ -101,7 +101,7 @@ I've disabled the service worker to prevent caching issues. The app should now w
 
 Before re-adding to home screen:
 1. Open Safari
-2. Go to: https://watchreminder.preview.emergentagent.com
+2. Go to: https://watchnotify.preview.emergentagent.com
 3. Does it load correctly?
 4. If YES → Safe to add to home screen
 5. If NO → Check internet connection
