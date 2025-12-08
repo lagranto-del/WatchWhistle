@@ -596,6 +596,8 @@ const Dashboard = ({ user, onLogout }) => {
           border-radius: 16px;
           overflow: hidden;
           cursor: pointer;
+          touch-action: manipulation;
+          -webkit-tap-highlight-color: transparent;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           transition: transform 0.2s, box-shadow 0.2s;
         }
