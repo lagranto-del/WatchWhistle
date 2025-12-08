@@ -102,6 +102,32 @@ h1, h2, h3, h4, h5, h6 {
   color: white;
 }
 
+/* iOS Specific Styles */
+.show-card {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+
+.share-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  color: #3b82f6;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+
+.share-btn:hover {
+  background: #eff6ff;
+}
+
 /* Card Styles */
 .card {
   background: white;
