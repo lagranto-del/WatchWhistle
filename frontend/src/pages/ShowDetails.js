@@ -363,6 +363,14 @@ const ShowDetails = ({ user, onLogout }) => {
           color: #ef4444;
         }
 
+        .share-btn {
+          color: #3b82f6;
+        }
+
+        .share-btn:hover {
+          background: #eff6ff;
+        }
+
         .logo {
           display: flex;
           align-items: center;
