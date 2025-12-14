@@ -310,6 +310,16 @@ async def rate_show(show_id: str, rating_data: dict, user: User = Depends(get_cu
 
 async def fetch_and_store_episodes(user_id: str, show_id: str, tvmaze_id: int):
     """Fetch episodes from TVMaze and store in database"""
+    # Check if episodes already exist for this user and show
+    existing_count = await db.episodes.count_documents({
+        "user_id": user_id,
+        "show_id": show_id
+    })
+    
+    if existing_count > 0:
+        # Episodes already fetched, skip
+        return
+    
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(f"https://api.tvmaze.com/shows/{tvmaze_id}/episodes")
