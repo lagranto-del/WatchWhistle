@@ -50,10 +50,11 @@ const Dashboard = ({ user, onLogout }) => {
         api.get('/shows/favorites')
       ]);
       
-      setUpcomingEpisodes(upcomingRes.data);
+      // Ensure data is always an array
+      setUpcomingEpisodes(Array.isArray(upcomingRes.data) ? upcomingRes.data : []);
       
       // Check for new notifications and play whistle
-      const newNotifications = notifRes.data;
+      const newNotifications = Array.isArray(notifRes.data) ? notifRes.data : [];
       const currentUnreadCount = newNotifications.filter(n => !n.read).length;
       
       if (!loading && currentUnreadCount > previousUnreadCount && currentUnreadCount > 0) {
@@ -63,10 +64,14 @@ const Dashboard = ({ user, onLogout }) => {
       
       setPreviousUnreadCount(currentUnreadCount);
       setNotifications(newNotifications);
-      setFavorites(favRes.data);
+      setFavorites(Array.isArray(favRes.data) ? favRes.data : []);
     } catch (error) {
       console.error('Failed to load data:', error);
       toast.error('Failed to load data');
+      // Set default empty arrays on error
+      setUpcomingEpisodes([]);
+      setNotifications([]);
+      setFavorites([]);
     } finally {
       setLoading(false);
     }
