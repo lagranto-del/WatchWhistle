@@ -11,11 +11,13 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import "./App.css";
 
 // Capacitor imports with error handling
-let StatusBar, Style;
+let StatusBar, Style, SplashScreen;
 try {
   const statusBarModule = require('@capacitor/status-bar');
   StatusBar = statusBarModule.StatusBar;
   Style = statusBarModule.Style;
+  const splashModule = require('@capacitor/splash-screen');
+  SplashScreen = splashModule.SplashScreen;
 } catch (e) {
   // Running on web, Capacitor not available
 }
