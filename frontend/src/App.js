@@ -26,6 +26,7 @@ const API = `${BACKEND_URL}/api`;
 export const api = axios.create({
   baseURL: API,
   withCredentials: true,
+  timeout: 15000, // 15 second timeout
 });
 
 function App() {
