@@ -37,6 +37,18 @@ function App() {
   const [processingAuth, setProcessingAuth] = useState(false);
 
   useEffect(() => {
+    // Hide splash screen immediately
+    const hideSplash = async () => {
+      try {
+        if (SplashScreen) {
+          await SplashScreen.hide();
+        }
+      } catch (e) {
+        // Splash screen not available
+      }
+    };
+    hideSplash();
+
     // Configure status bar for iOS
     const configureStatusBar = async () => {
       try {
