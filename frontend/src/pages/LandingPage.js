@@ -1,9 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tv, Bell, Star, Search } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { SignInWithApple } from '@capacitor-community/apple-sign-in';
+import { Capacitor } from '@capacitor/core';
+import axios from 'axios';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://watchnotify.emergent.host';
 
 const LandingPage = () => {
-  const handleLogin = async () => {
+  const [showAppleSignIn, setShowAppleSignIn] = useState(false);
+  const [isAppleLoading, setIsAppleLoading] = useState(false);
+
+  useEffect(() => {
+    // Only show Apple Sign In on iOS devices
+    setShowAppleSignIn(Capacitor.getPlatform() === 'ios');
+  }, []);
+
+  const handleGoogleLogin = async () => {
     try {
       await Haptics.impact({ style: ImpactStyle.Medium });
     } catch (e) {
@@ -11,6 +24,42 @@ const LandingPage = () => {
     }
     const redirectUrl = `${window.location.origin}/dashboard`;
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+  };
+
+  const handleAppleSignIn = async () => {
+    setIsAppleLoading(true);
+    try {
+      await Haptics.impact({ style: ImpactStyle.Medium });
+      
+      const result = await SignInWithApple.authorize({
+        clientId: 'com.watchwhistle.app',
+        redirectURI: 'https://watchwhistle.emergent.host',
+        scopes: 'email name',
+        state: '12345',
+        nonce: 'nonce',
+      });
+
+      if (result.response.identityToken) {
+        // Send to backend for verification
+        const response = await axios.post(`${API_URL}/api/auth/apple-signin`, {
+          identityToken: result.response.identityToken,
+          user: result.response.user,
+          email: result.response.email,
+          fullName: result.response.fullName,
+        });
+
+        if (response.data.token) {
+          // Store auth token and redirect
+          localStorage.setItem('authToken', response.data.token);
+          window.location.href = '/dashboard';
+        }
+      }
+    } catch (error) {
+      console.error('Apple Sign In error:', error);
+      alert('Sign in with Apple failed. Please try again.');
+    } finally {
+      setIsAppleLoading(false);
+    }
   };
 
   return (
