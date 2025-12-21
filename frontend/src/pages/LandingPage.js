@@ -74,10 +74,10 @@ const LandingPage = () => {
           </div>
           <button 
             className="btn btn-outline" 
-            onClick={handleLogin}
-            data-testid="login-button"
+            onClick={handleGoogleLogin}
+            data-testid="nav-signin-button"
           >
-            Sign In with Google
+            Sign In
           </button>
         </nav>
 
