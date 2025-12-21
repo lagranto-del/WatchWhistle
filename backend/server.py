@@ -133,6 +133,134 @@ async def get_current_user(request: Request, session_token: Optional[str] = Cook
 
 # ============= AUTH ROUTES =============
 
+class AppleSignInRequest(BaseModel):
+    identityToken: str
+    user: str
+    email: Optional[str] = None
+    fullName: Optional[dict] = None
+
+@api_router.post("/auth/apple-signin")
+async def apple_signin(request: AppleSignInRequest, response: Response):
+    """Handle Apple Sign In authentication"""
+    import jwt
+    import httpx
+    from jose import jwk
+    from jose.exceptions import JWTError
+    
+    try:
+        # Decode the JWT header to get the key ID
+        unverified_header = jwt.get_unverified_header(request.identityToken)
+        kid = unverified_header.get('kid')
+        
+        # Fetch Apple's public keys
+        async with httpx.AsyncClient() as client:
+            keys_response = await client.get('https://appleid.apple.com/auth/keys')
+            apple_keys = keys_response.json()
+        
+        # Find the matching public key
+        public_key = None
+        for key in apple_keys['keys']:
+            if key['kid'] == kid:
+                public_key = jwk.construct(key)
+                break
+        
+        if not public_key:
+            raise HTTPException(status_code=401, detail="Invalid Apple token")
+        
+        # Verify and decode the token
+        decoded = jwt.decode(
+            request.identityToken,
+            public_key.to_pem().decode(),
+            algorithms=['RS256'],
+            audience='com.watchwhistle.app',
+            options={"verify_exp": True}
+        )
+        
+        apple_user_id = decoded.get('sub')
+        email = decoded.get('email') or request.email
+        
+        if not apple_user_id:
+            raise HTTPException(status_code=401, detail="No user identifier in Apple response")
+        
+        # Extract name
+        full_name = "Apple User"
+        if request.fullName:
+            given_name = request.fullName.get('givenName', '')
+            family_name = request.fullName.get('familyName', '')
+            if given_name and family_name:
+                full_name = f"{given_name} {family_name}"
+            elif given_name:
+                full_name = given_name
+        
+        # Check if user exists by apple_id
+        user_doc = await db.users.find_one({"apple_id": apple_user_id}, {"_id": 0})
+        
+        if user_doc:
+            # Update last login
+            await db.users.update_one(
+                {"apple_id": apple_user_id},
+                {"$set": {"last_login": datetime.now(timezone.utc).isoformat()}}
+            )
+            user_id = user_doc["id"]
+            user_email = user_doc.get("email", email)
+            user_name = user_doc.get("name", full_name)
+        else:
+            # Create new user
+            if not email:
+                raise HTTPException(status_code=400, detail="Email required for new user")
+            
+            new_user = User(
+                email=email,
+                name=full_name,
+                picture=""  # Apple doesn't provide profile pictures
+            )
+            user_dict = new_user.model_dump()
+            user_dict["apple_id"] = apple_user_id
+            user_dict["last_login"] = datetime.now(timezone.utc).isoformat()
+            user_dict["created_at"] = user_dict["created_at"].isoformat()
+            await db.users.insert_one(user_dict)
+            user_id = new_user.id
+            user_email = email
+            user_name = full_name
+        
+        # Create session token
+        session_token = str(uuid.uuid4())
+        expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+        
+        session = UserSession(
+            user_id=user_id,
+            session_token=session_token,
+            expires_at=expires_at
+        )
+        session_dict = session.model_dump()
+        session_dict["expires_at"] = session_dict["expires_at"].isoformat()
+        session_dict["created_at"] = session_dict["created_at"].isoformat()
+        await db.sessions.insert_one(session_dict)
+        
+        # Set cookie
+        response.set_cookie(
+            key="session_token",
+            value=session_token,
+            httponly=True,
+            secure=True,
+            samesite="none",
+            max_age=7 * 24 * 60 * 60
+        )
+        
+        return {
+            "token": session_token,
+            "user_id": user_id,
+            "email": user_email,
+            "name": user_name
+        }
+        
+    except JWTError as e:
+        logging.error(f"JWT verification failed: {e}")
+        raise HTTPException(status_code=401, detail="Invalid Apple token")
+    except Exception as e:
+        logging.error(f"Apple sign-in error: {e}")
+        raise HTTPException(status_code=500, detail="Error processing sign-in")
+
 @api_router.post("/auth/session")
 async def create_session(request: Request, response: Response):
     """Exchange session_id for session_token"""
