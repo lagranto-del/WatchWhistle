@@ -1,0 +1,2 @@
+This should be a 192x192 PNG icon with a red TV icon and "WW" text
+For now, using placeholder
