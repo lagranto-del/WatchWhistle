@@ -154,10 +154,13 @@ const LandingPage = () => {
           background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
           border: 8px solid #333;
           border-radius: 8px;
-          padding: 60px 100px;
+          padding: 40px 20px;
           margin-bottom: 60px;
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
           position: relative;
+          width: 100%;
+          max-width: 800px;
+          box-sizing: border-box;
         }
 
         .theater-screen::before {
@@ -174,12 +177,14 @@ const LandingPage = () => {
         }
 
         .screen-title {
-          font-size: clamp(48px, 8vw, 72px);
+          font-size: clamp(36px, 10vw, 64px);
           font-weight: 700;
           color: #ef4444;
           margin: 0;
           line-height: 1.1;
           text-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+          word-wrap: break-word;
+          overflow-wrap: break-word;
         }
 
         .hero-heading {
