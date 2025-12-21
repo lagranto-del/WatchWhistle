@@ -272,9 +272,40 @@ const LandingPage = () => {
           max-width: 600px;
         }
 
+        .auth-buttons {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          width: 100%;
+          max-width: 400px;
+        }
+
+        .btn-icon {
+          margin-right: 8px;
+        }
+
         .btn-large {
           padding: 16px 48px;
           font-size: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+        }
+
+        .btn-apple {
+          background: #000;
+          color: white;
+          border: none;
+        }
+
+        .btn-apple:hover {
+          background: #1a1a1a;
+        }
+
+        .btn-apple:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
         }
 
         .features-section {
