@@ -235,3 +235,57 @@ h1, h2, h3, h4, h5, h6 {
 .star:hover {
   color: #fbbf24;
 }
+
+
+/* iPad Specific Styles */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .loading-container {
+    padding: 40px;
+  }
+  
+  .loading-title {
+    font-size: 42px;
+  }
+  
+  .loader {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+/* iPad Pro and larger tablets */
+@media (min-width: 1024px) and (max-width: 1366px) {
+  .loading-container {
+    padding: 60px;
+  }
+  
+  .loading-title {
+    font-size: 48px;
+  }
+}
+
+/* Landscape mode fixes for iPad */
+@media (orientation: landscape) and (max-height: 500px) {
+  .loading-container {
+    flex-direction: row;
+    gap: 40px;
+  }
+  
+  .loading-brand {
+    margin-bottom: 0;
+  }
+}
+
+/* iOS-specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* iOS only styles */
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .loading-container {
+    /* Fix for iOS viewport height issues */
+    height: 100%;
+    height: -webkit-fill-available;
+  }
+}
