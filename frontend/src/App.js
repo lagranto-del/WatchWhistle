@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import axios from "axios";
 import LandingPage from "./pages/LandingPage";
@@ -10,17 +10,21 @@ import Marketing from "./pages/Marketing";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import "./App.css";
 
-// Capacitor imports with error handling
+// Capacitor imports with error handling - wrapped in IIFE for better error handling
 let StatusBar, Style, SplashScreen;
-try {
-  const statusBarModule = require('@capacitor/status-bar');
-  StatusBar = statusBarModule.StatusBar;
-  Style = statusBarModule.Style;
-  const splashModule = require('@capacitor/splash-screen');
-  SplashScreen = splashModule.SplashScreen;
-} catch (e) {
-  // Running on web, Capacitor not available
-}
+const initCapacitor = () => {
+  try {
+    const statusBarModule = require('@capacitor/status-bar');
+    StatusBar = statusBarModule.StatusBar;
+    Style = statusBarModule.Style;
+    const splashModule = require('@capacitor/splash-screen');
+    SplashScreen = splashModule.SplashScreen;
+  } catch (e) {
+    // Running on web or iPad/iPhone without Capacitor plugins
+    console.log('Capacitor plugins not available, running in web mode');
+  }
+};
+initCapacitor();
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -28,39 +32,24 @@ const API = `${BACKEND_URL}/api`;
 export const api = axios.create({
   baseURL: API,
   withCredentials: true,
-  timeout: 15000, // 15 second timeout
+  timeout: 10000, // Reduced to 10 second timeout for faster failure
 });
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [processingAuth, setProcessingAuth] = useState(false);
+  const [initError, setInitError] = useState(false);
 
-  useEffect(() => {
-    // Hide splash screen immediately
-    const hideSplash = async () => {
-      try {
-        if (SplashScreen) {
-          await SplashScreen.hide();
-        }
-      } catch (e) {
-        // Splash screen not available
-      }
-    };
-    hideSplash();
+  const checkAuth = useCallback(async () => {
+    // Safety timeout - never stay in loading state more than 8 seconds
+    const safetyTimeout = setTimeout(() => {
+      console.log('Safety timeout triggered - forcing load completion');
+      setLoading(false);
+      setProcessingAuth(false);
+    }, 8000);
 
-    // Configure status bar for iOS
-    const configureStatusBar = async () => {
-      try {
-        await StatusBar.setStyle({ style: Style.Light });
-        await StatusBar.setBackgroundColor({ color: '#ef4444' });
-      } catch (e) {
-        // Status bar not available on web
-      }
-    };
-    configureStatusBar();
-
-    const checkAuth = async () => {
+    try {
       // Check for session_id in URL fragment
       const hash = window.location.hash;
       if (hash && hash.includes("session_id=")) {
@@ -86,15 +75,50 @@ function App() {
           const response = await api.get("/auth/me");
           setUser(response.data);
         } catch (error) {
-          // Not authenticated
+          // Not authenticated - this is normal, not an error
+          console.log('User not authenticated');
         }
       }
-      
+    } catch (error) {
+      console.error("Init error:", error);
+      setInitError(true);
+    } finally {
+      clearTimeout(safetyTimeout);
       setLoading(false);
-    };
-
-    checkAuth();
+    }
   }, []);
+
+  useEffect(() => {
+    // Hide splash screen immediately - with error handling
+    const hideSplash = async () => {
+      try {
+        if (SplashScreen && typeof SplashScreen.hide === 'function') {
+          await SplashScreen.hide();
+        }
+      } catch (e) {
+        console.log('Splash screen hide failed:', e);
+      }
+    };
+    hideSplash();
+
+    // Configure status bar for iOS - with better error handling
+    const configureStatusBar = async () => {
+      try {
+        if (StatusBar && Style && typeof StatusBar.setStyle === 'function') {
+          await StatusBar.setStyle({ style: Style.Light });
+          if (typeof StatusBar.setBackgroundColor === 'function') {
+            await StatusBar.setBackgroundColor({ color: '#ef4444' });
+          }
+        }
+      } catch (e) {
+        console.log('Status bar config failed:', e);
+      }
+    };
+    configureStatusBar();
+
+    // Start auth check
+    checkAuth();
+  }, [checkAuth]);
 
   const handleLogout = async () => {
     try {
