@@ -24,19 +24,13 @@
             }
         </style>
         <script>
-            // Replace Emergent badge with WatchWhistle badge
+            // Hide Emergent badge for native iOS app
             window.addEventListener('load', function() {
                 setTimeout(function() {
                     var emergentBadge = document.getElementById('emergent-badge');
                     if (emergentBadge) {
                         emergentBadge.style.display = 'none';
                         emergentBadge.remove();
-                    }
-                    
-                    // Show our custom badge
-                    var customBadge = document.getElementById('watchwhistle-badge');
-                    if (customBadge) {
-                        customBadge.style.display = 'flex';
                     }
                 }, 100);
             });
