@@ -79,6 +79,15 @@ const LandingPage = () => {
             </svg>
             Continue with Google
           </button>
+          <button 
+            className="btn btn-outline btn-large" 
+            onClick={() => navigate('/demo')}
+            data-testid="preview-button"
+            style={{ marginTop: '16px' }}
+          >
+            <Eye size={20} style={{ marginRight: '8px' }} />
+            Preview App
+          </button>
         </div>
       </div>
 
