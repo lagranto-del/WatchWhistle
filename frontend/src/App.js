@@ -8,6 +8,7 @@ import ShowDetails from "./pages/ShowDetails";
 import Support from "./pages/Support";
 import Marketing from "./pages/Marketing";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import DemoPreview from "./pages/DemoPreview";
 import "./App.css";
 
 // Capacitor imports with error handling - wrapped in IIFE for better error handling
