@@ -2,34 +2,60 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#000000" />
-        <meta name="description" content="A product of emergent.sh" />
-        <!--
-        manifest.json provides metadata used when your web app is installed on a
-        user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-        -->
-        <!--
-        Notice the use of %PUBLIC_URL% in the tags above.
-        It will be replaced with the URL of the `public` folder during the build.
-        Only files inside the `public` folder can be referenced from the HTML.
-
-        Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-        work correctly both with client-side routing and a non-root public URL.
-        Learn how to configure a non-root public URL by running `npm run build`.
-        -->
-        <title>Emergent | Fullstack App</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+        <meta name="theme-color" content="#ef4444" />
+        <meta name="description" content="Track your favorite TV shows and never miss an episode" />
+        
+        <!-- PWA Meta Tags -->
+        <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="WatchWhistle" />
+        <link rel="apple-touch-icon" href="%PUBLIC_URL%/icon-192.png" />
+        
+        <title>WatchWhistle - TV Show Tracker</title>
         <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
+        <style>
+            /* Hide the default Emergent badge */
+            #emergent-badge {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+            }
+        </style>
+        <script>
+            // Replace Emergent badge with WatchWhistle badge
+            window.addEventListener('load', function() {
+                setTimeout(function() {
+                    var emergentBadge = document.getElementById('emergent-badge');
+                    if (emergentBadge) {
+                        emergentBadge.style.display = 'none';
+                        emergentBadge.remove();
+                    }
+                    
+                    // Show our custom badge
+                    var customBadge = document.getElementById('watchwhistle-badge');
+                    if (customBadge) {
+                        customBadge.style.display = 'flex';
+                    }
+                }, 100);
+            });
+        </script>
+        <!--
+        These two scripts have been added for the testing, please do not edit or remove them
+        -->
+        <script src="https://unpkg.com/rrweb@latest/dist/rrweb.min.js"></script>
+        <script src="https://d2adkz2s9zrlge.cloudfront.net/rrweb-recorder-20250919-1.js"></script>
         <!--
         These two scripts have been added for the Visual Edits, please do not edit or remove them
         -->
         <script>
-            // Only load visual edit scripts when inside an iframe
-            if (window.self !== window.top) {
+            // Only load visual edit scripts when inside an iframe and visual edits are enabled
+            if (window.self !== window.top && '%REACT_APP_ENABLE_VISUAL_EDITS%' === 'true') {
                 // Load debug monitor script
-                var debugMonitorScript = document.createElement('script');
-                debugMonitorScript.src = 'https://assets.emergent.sh/scripts/debug-monitor.js';
-                document.head.appendChild(debugMonitorScript);
+                var debugScript = document.createElement('script');
+                debugScript.src = 'https://assets.emergent.sh/scripts/debug-monitor.js';
+                document.head.appendChild(debugScript);
 
                 // Configure Tailwind
                 window.tailwind = window.tailwind || {};
@@ -58,9 +84,9 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
         <a
-            id="emergent-badge"
+            id="watchwhistle-badge"
             target="_blank"
-            href="https://app.emergent.sh/?utm_source=emergent-badge"
+            href="https://watchnotify.preview.emergentagent.com"
             style="
                 display: flex !important;
                 align-items: center !important;
@@ -68,39 +94,49 @@
                 bottom: 20px;
                 right: 20px;
                 text-decoration: none;
-                padding: 6px 10px;
-                font-family: -apple-system, BlinkMacSystemFont,
+                padding: 8px 14px;
+                font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont,
                     &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell,
                     &quot;Open Sans&quot;, &quot;Helvetica Neue&quot;,
                     sans-serif !important;
-                font-size: 12px !important;
+                font-size: 14px !important;
                 z-index: 9999 !important;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-                border-radius: 8px !important;
-                background-color: #ffffff !important;
-                border: 1px solid rgba(255, 255, 255, 0.25) !important;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+                border-radius: 50px !important;
+                background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+                border: none !important;
+                font-weight: 600 !important;
             "
         >
             <div
                 style="display: flex; flex-direction: row; align-items: center"
             >
-                <img
-                    style="width: 20px; height: 20px; margin-right: 8px"
-                    src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4"
-                />
+                <svg 
+                    width="20" 
+                    height="20" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="white" 
+                    stroke-width="2" 
+                    style="margin-right: 8px"
+                >
+                    <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                    <polyline points="17 2 12 7 7 2"></polyline>
+                </svg>
                 <p
                     style="
-                        color: #000000;
-                        font-family: -apple-system, BlinkMacSystemFont,
+                        color: #ffffff;
+                        font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont,
                             &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu,
                             Cantarell, &quot;Open Sans&quot;,
                             &quot;Helvetica Neue&quot;, sans-serif !important;
-                        font-size: 12px !important;
+                        font-size: 14px !important;
                         align-items: center;
                         margin-bottom: 0;
+                        font-weight: 600 !important;
                     "
                 >
-                    Made with Emergent
+                    WatchWhistle
                 </p>
             </div>
         </a>
@@ -166,12 +202,9 @@
                     }),
                     (e.__SV = 1));
             })(document, window.posthog || []);
-            posthog.init("phc_xAvL2Iq4tFmANRE7kzbKwaSqp1HJjN7x48s3vr0CMjs", {
+            posthog.init("phc_yJW1VjHGGwmCbbrtczfqqNxgBDbhlhOWcdzcIJEOTFE", {
                 api_host: "https://us.i.posthog.com",
-                person_profiles: "identified_only", // or 'always' to create profiles for anonymous users as well,
-                session_recording: {
-                    recordCrossOriginIframes: true,
-                },
+                person_profiles: "identified_only", // or 'always' to create profiles for anonymous users as well
             });
         </script>
     </body>
