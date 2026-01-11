@@ -130,11 +130,42 @@ function App() {
     }
   };
 
+  // Show loading with better UX - includes branding so it doesn't look like just a red screen
   if (loading || processingAuth) {
     return (
-      <div className="loading-container">
+      <div className="loading-container" data-testid="loading-screen">
+        <div className="loading-brand">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+            <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+            <polyline points="17 2 12 7 7 2"></polyline>
+          </svg>
+          <h1 className="loading-title">WatchWhistle</h1>
+        </div>
         <div className="loader"></div>
-        <p>Loading...</p>
+        <p>Loading your shows...</p>
+      </div>
+    );
+  }
+
+  // Show error state if initialization failed
+  if (initError) {
+    return (
+      <div className="loading-container" data-testid="error-screen">
+        <div className="loading-brand">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+            <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+            <polyline points="17 2 12 7 7 2"></polyline>
+          </svg>
+          <h1 className="loading-title">WatchWhistle</h1>
+        </div>
+        <p>Having trouble connecting...</p>
+        <button 
+          className="btn btn-outline" 
+          onClick={() => window.location.reload()}
+          style={{ marginTop: '20px' }}
+        >
+          Try Again
+        </button>
       </div>
     );
   }
