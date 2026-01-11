@@ -6,25 +6,73 @@
   box-sizing: border-box;
 }
 
+/* Root styles for iOS safe areas */
+:root {
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   min-height: 100vh;
+  min-height: -webkit-fill-available;
   color: #1a1a1a;
+  /* iOS safe area padding */
+  padding-top: var(--safe-area-inset-top);
+  padding-bottom: var(--safe-area-inset-bottom);
+  padding-left: var(--safe-area-inset-left);
+  padding-right: var(--safe-area-inset-right);
+}
+
+#root {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Space Grotesk', sans-serif;
 }
 
+/* Loading Container - Enhanced for iPad */
 .loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  min-height: -webkit-fill-available;
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
+  padding: 20px;
+  /* Ensure it covers the full viewport on iPad */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+}
+
+.loading-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.loading-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-top: 16px;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 .loader {
@@ -44,6 +92,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 16px;
   font-size: 18px;
   font-weight: 500;
+  text-align: center;
 }
 
 /* Button Styles */
