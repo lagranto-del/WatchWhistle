@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Tv, Bell, Star, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Tv, Bell, Star, Search, Eye } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
@@ -8,6 +9,7 @@ import axios from 'axios';
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://watchnotify.emergent.host';
 
 const LandingPage = () => {
+  const navigate = useNavigate();
   const [showAppleSignIn, setShowAppleSignIn] = useState(false);
   const [isAppleLoading, setIsAppleLoading] = useState(false);
 
