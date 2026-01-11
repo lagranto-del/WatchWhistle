@@ -222,6 +222,10 @@ function App() {
           path="/privacy"
           element={<PrivacyPolicy />}
         />
+        <Route
+          path="/demo"
+          element={<DemoPreview />}
+        />
       </Routes>
     </BrowserRouter>
   );
