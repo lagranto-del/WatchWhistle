@@ -8,15 +8,63 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://watchnotify.emergent.host';
 
+// Try to import Sign in with Apple plugin
+let SignInWithApple;
+try {
+  const appleModule = require('@capacitor-community/apple-sign-in');
+  SignInWithApple = appleModule.SignInWithApple;
+} catch (e) {
+  // Not available
+}
+
 const LandingPage = () => {
   const navigate = useNavigate();
   const [showAppleSignIn, setShowAppleSignIn] = useState(false);
   const [isAppleLoading, setIsAppleLoading] = useState(false);
 
   useEffect(() => {
-    // Only show Apple Sign In on iOS devices
+    // Show Apple Sign In on iOS devices
     setShowAppleSignIn(Capacitor.getPlatform() === 'ios');
   }, []);
+
+  const handleAppleLogin = async () => {
+    setIsAppleLoading(true);
+    try {
+      await Haptics.impact({ style: ImpactStyle.Medium });
+    } catch (e) {
+      // Haptics not available
+    }
+
+    try {
+      // Use Capacitor Sign in with Apple
+      const result = await SignInWithApple.authorize({
+        clientId: 'com.tillywatchwhistle',
+        redirectURI: 'https://help-request-21.preview.emergentagent.com/api/auth/apple-callback',
+        scopes: 'email name',
+        state: 'watchwhistle',
+        nonce: Math.random().toString(36).substring(2)
+      });
+
+      // Send to backend for verification
+      const response = await axios.post(`${API_URL}/api/auth/apple-signin`, {
+        identityToken: result.response.identityToken,
+        user: result.response.user,
+        email: result.response.email,
+        fullName: result.response.fullName
+      });
+
+      if (response.data.token) {
+        // Store token and redirect
+        localStorage.setItem('session_token', response.data.token);
+        window.location.href = '/dashboard';
+      }
+    } catch (error) {
+      console.error('Apple Sign-In error:', error);
+      alert('Sign in failed. Please try again.');
+    } finally {
+      setIsAppleLoading(false);
+    }
+  };
 
   const handleGoogleLogin = async () => {
     try {
