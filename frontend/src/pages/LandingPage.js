@@ -1,22 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Tv, Bell, Star, Search } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
-import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://watchnotify.emergent.host';
 
 const LandingPage = () => {
-  const [showAppleSignIn, setShowAppleSignIn] = useState(false);
-  const [isAppleLoading, setIsAppleLoading] = useState(false);
-
-  useEffect(() => {
-    // Only show Apple Sign In on iOS devices
-    setShowAppleSignIn(Capacitor.getPlatform() === 'ios');
-  }, []);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleLogin = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
+    
     try {
       await Haptics.impact({ style: ImpactStyle.Medium });
     } catch (e) {
@@ -26,15 +20,38 @@ const LandingPage = () => {
     const redirectUrl = `${window.location.origin}/dashboard`;
     const authUrl = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
     
-    // Use Safari View Controller on iOS, regular browser on web
+    // Use Safari View Controller on iOS/iPadOS, regular browser on web
     if (Capacitor.getPlatform() === 'ios') {
-      await Browser.open({ 
-        url: authUrl,
-        presentationStyle: 'popover'
-      });
+      try {
+        // Detect iPad by screen size (iPad has larger viewport)
+        const isIpad = window.innerWidth >= 768;
+        
+        if (isIpad) {
+          // iPad requires explicit width/height for popover to work properly
+          await Browser.open({ 
+            url: authUrl,
+            presentationStyle: 'popover',
+            width: Math.min(window.innerWidth * 0.9, 600),
+            height: Math.min(window.innerHeight * 0.8, 700)
+          });
+        } else {
+          // iPhone uses fullscreen presentation
+          await Browser.open({ 
+            url: authUrl,
+            presentationStyle: 'fullscreen'
+          });
+        }
+      } catch (error) {
+        console.error('Browser open error:', error);
+        // Fallback to regular navigation if Browser fails
+        window.location.href = authUrl;
+      }
     } else {
       window.location.href = authUrl;
     }
+    
+    // Reset loading state after a short delay (browser will redirect anyway)
+    setTimeout(() => setIsLoading(false), 3000);
   };
 
   return (
