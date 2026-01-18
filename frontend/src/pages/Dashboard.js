@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../App';
-import { Tv, Search, Bell, LogOut, Calendar, Clock, Check, Share2 } from 'lucide-react';
+import { Tv, Search, Bell, LogOut, Calendar, Clock, Check, Share2, Settings, Trash2, X } from 'lucide-react';
 import { toast, Toaster } from 'sonner';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Share } from '@capacitor/share';
@@ -14,6 +14,9 @@ const Dashboard = ({ user, onLogout }) => {
   const [loading, setLoading] = useState(true);
   const [showNotifications, setShowNotifications] = useState(false);
   const [previousUnreadCount, setPreviousUnreadCount] = useState(0);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Whistle sound effect using Web Audio API
   const playWhistle = () => {
