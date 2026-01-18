@@ -1,0 +1,177 @@
+<analysis>**original_problem_statement:**
+The user wants to build a full-stack application named WatchWhistle that notifies users of new episodes for their favorite TV shows. The app must be submitted to the Apple App Store.
+
+**PRODUCT REQUIREMENTS:**
+- **Data Source:** TV Maze API.
+- **Authentication:** Emergent-based Google social login. Apple Sign In was later requested.
+- **Core Features:**
+    - Search for TV shows and add them to a favorites list.
+    - View upcoming shows and episodes.
+    - Mark episodes as watched, with an undo feature.
+    - Receive in-app notifications for new episodes.
+    - Rate shows.
+- **Design & UI:** A red-themed UI with a movie theater background on the landing page.
+- **Native App & PWA:** The application must be a downloadable native Capacitor app for iPhones and must be mobile-responsive.
+- **App Store Submission & Rejection Feedback:**
+    - The app has been rejected multiple times by Apple for the following reasons:
+        1.  Being too similar to a web browsing experience.
+        2.  A blank screen bug on certain test devices.
+        3.  Using an external web browser for Google login instead of an in-app method.
+        4.  Including development-process artifacts in the app icon.
+        5.  (Upcoming Requirement) Apps with account creation must offer account deletion.
+
+**User's preferred language**: English
+
+**what currently exists?**
+A full-stack application with a FastAPI backend and a React/Capacitor frontend. The application has been deployed to a production URL. All major bugs reported by Apple, including the blank screen and external browser login (fixed with Safari View Controller), have been addressed. The user has been guided through an extremely complex and lengthy process of fixing Xcode code signing issues, which were the main blocker for creating a submittable build. The user has successfully uploaded a new build with the latest fixes and correct screenshots to App Store Connect.
+
+**Last working item**:
+- **Last item agent was working:** The agent was guiding the user through the final steps of submitting the application to the App Store after a new build was successfully uploaded to App Store Connect. The user had resolved screenshot size issues and confirmed the app status was Ready for Review.
+- **Status:** USER VERIFICATION PENDING
+- **Agent Testing Done:** N/A
+- **Which testing method agent to use?** N/A. The user needs to complete the submission process on the App Store Connect website.
+- **User Testing Done:** Y
+
+**All Pending/In progress Issue list**:
+- **Issue 1: Recurring Xcode Code Signing and Provisioning Hell (P0)**
+  - **Description:** The user has consistently struggled with Xcode's code signing process, especially after adding new capabilities like Sign In with Apple. This has been the single largest blocker, consuming a vast amount of time. Issues include certificate mismatches, profile errors, wrong bundle IDs, and incorrect signing identities. The last successful archive was achieved by using manual signing with a specific distribution profile after fixing the Bundle ID and signing identity in the project files.
+  - **Attempted fixes:** Numerous attempts were made, including automatic vs. manual signing, creating/deleting multiple profiles and certificates, and deep-diving into the  file to manually set signing identities and team IDs.
+  - **Next debug checklist:** If this issue recurs, the next agent must:
+    1.  Verify the  in  is set to  for the **Release** configuration.
+    2.  Verify the  in the same file is set to .
+    3.  Instruct the user to use **Manual Signing** in Xcode for the **Release** configuration.
+    4.  Ensure the correct **Distribution Certificate** and **Provisioning Profile** (created for  and for **App Store Distribution**) are selected.
+  - **Why fix this issue and what will be achieved with the fix?** This is a critical, recurring blocker. Solving it definitively is the only way to allow the user to reliably submit app updates.
+  - **Status:** BLOCKED
+  - **Is recurring issue?** Y
+  - **Should Test frontend/backend/both after fix?** N/A
+  - **Blocked on other issue:** This is a fundamental blocker for all App Store submissions.
+
+**In progress Task List**:
+- **Task 1: Implement Sign In with Apple (P1)**
+  - **Description:** This task was started to satisfy Apple's requirements but was paused due to the Xcode signing issues (Issue 1) it triggered. The backend endpoint and frontend UI have been partially implemented but are currently disabled to allow for submission.
+  - **Where to resume:**
+    1. Re-add the Sign In with Apple button to .
+    2. In Xcode, re-enable the Sign In with Apple capability.
+    3. Resolve the resulting code signing issues (see Issue 1).
+  - **What will be achieved with this?** This will provide a login method preferred by Apple and fully resolve the external browser login rejection feedback.
+  - **Status:** BLOCKED
+  - **Should Test frontend/backend/both after fix?** Both.
+  - **Blocked on something:** Issue 1: Recurring Xcode Code Signing and Provisioning Hell.
+
+**Upcoming and Future Tasks**
+- **Upcoming Tasks:**
+  - **(P0)** Wait for user to confirm if the current App Store submission was successful.
+  - **(P1)** Implement Account Deletion feature. Apple requires apps with account creation to also offer account deletion (Guideline 5.1.1(v)). This involves:
+    - Adding a Delete Account button in the user's profile/settings UI.
+    - Creating a new backend endpoint (e.g., ) that removes the user's data from all relevant collections (users, favorites, watched_episodes, notifications).
+- **Future Tasks:**
+  - **(P2)** Address Apple's too web-like feedback by redesigning parts of the UI to feel more native. The user suggested changing the list-based view of shows to a grid of poster icons.
+
+**Completed work in this session**
+- **Core App Functionality & Bug Fixes:**
+  - **Blank Screen Fix:** Resolved a critical JS error on iOS by fixing the React 18 render method in  and a  function error in .
+  - **Production Deployment:** Deployed the backend and updated the app to use a production URL (), fixing a major cause of rejection by Apple's testers.
+  - **Login Flow Fix:** Replaced the external browser Google login with an in-app browser flow using Safari View Controller () in .
+  - **Database Logic:** Fixed a bug causing episodes to be pre-marked as watched by adding duplicate prevention logic in .
+  - **UI Fixes:** Corrected a CSS issue hiding the Share button and fixed an off-center layout on the .
+- **Build & Submission Process:**
+  - **Xcode Signing:** After extensive troubleshooting, fixed the project's Bundle ID () and code signing identity to allow a successful archive.
+  - **User Guidance:** Provided exhaustive step-by-step guidance to the non-technical user for building on their Mac, using Xcode, managing developer portal assets, and taking correctly sized screenshots.
+  - **App Icon:** Guided the user to replace the placeholder app icon.
+
+**Earlier issues found/mentioned but not fixed**
+- **Issue 1: Account Deletion Feature is Missing**
+  - **Debug checklist:**
+    1.  Add a Delete Account button to the frontend UI (e.g., in a settings page or user profile).
+    2.  Create a  endpoint in .
+    3.  The endpoint should delete the user's document from the  collection.
+    4.  It should also delete all associated data from , , and  collections for that .
+  - **Why to solve this issue and what will be achieved with this?** This is required by Apple's App Review Guideline 5.1.1(v). The app will be rejected if this is not implemented.
+  - **Should Test frontend/backend/both after fix:** Both.
+  - **Is recurring issue?** N
+
+**Known issue recurrence from previous fork**
+- None.
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+- **Backend:** FastAPI
+- **Frontend:** React
+- **Database:** MongoDB
+- **Native Wrapper:** Capacitor.js for iOS
+- **Authentication:** Google Social Login via Safari View Controller (). Apple Sign In () is partially implemented but disabled.
+- **Build Environment:** The user builds the final  on their personal Mac using Xcode.
+
+**key DB schema**
+- **users:** Stores user profile information.
+- **favorites:** Stores user's favorite shows (, ).
+- **watched_episodes:** Tracks watched episodes (, ).
+- **notifications:** Stores new episode notifications ().
+
+**changes in tech stack**
+- Added  to implement in-app Google login.
+- Added (but later disabled)  for Apple Sign In.
+- Added  and  to the backend for Apple token verification.
+
+**All files of reference**
+- : **CRITICAL FILE.** Frequently edited to fix code signing. Correct  is .
+- :  must match the bundle identifier.
+- : Contains the new Safari View Controller logic for Google login.
+- : Contains  safety checks.
+- : Contains all backend logic, including the un-used Apple auth endpoint.
+
+**Areas that need refactoring**:
+- The user's Apple Developer account has numerous old and confusing App IDs. It would be beneficial to clean this up, though it's outside the agent's direct control.
+
+**key api endpoints**
+- : Handles Google Sign-In.
+- : Created for Apple Sign-In but currently not used by the frontend.
+- 
+- 
+- 
+
+**Critical Info for New Agent**
+- **The user is not technical.** All instructions for their local Mac environment (Xcode, Terminal) must be extremely simple and literal.
+- **Xcode signing is the biggest pain point.** Assume any change to capabilities or project settings might break it. The last working configuration used **Manual Signing** for the **Release** build, targeting the  bundle ID.
+- The app's submission to Apple is pending. The next step is to see if the latest build (with Safari View Controller login) is approved.
+- **Account Deletion is a mandatory feature that is missing.** This should be the highest priority task after the current submission result is known to prevent another rejection.
+
+**documents and test reports created in this job**
+- None.
+
+**Last 10 User Messages and any pending HUMAN messages**
+1. **User:** Ok I have it uploaded to Apple. Can you walk me through the steps to submit.
+2. **User:** (Re: Screenshots) It says they are the wrong size when I take them from the test tracker
+3. **User:** Lets do screensshots first. I have the app uploaded and ready but the screenshots are at the same time. I phone 15 pro max is not an option
+4. **User:** I cannot find manage run destinations?
+5. **User:** It says the dimenstions of the screenshots are wrong? Also, the sign in looks the same as it did before with the google?
+6. **User:** It says size 1290 x 2796?
+7. **User:** (Re: App Store Connect screenshot slots) The only options are 6.9 6.5 6.3 6.1 and then 5s
+8. **User:** That worked! Will a 13 mini work for the other size?
+9. **User:** I mean it says Ready for review
+10. **Agent:** Advised the user to click Submit for Review since the app status is Ready for Review.
+- **Pending:** Waiting for the user to confirm they have submitted the app and to hear back from Apple's review.
+
+**Project Health Check:**
+- **Broken:** The Apple Sign In feature is incomplete and disabled due to unresolved code signing issues.
+- **Mocked:** None.
+
+**3rd Party Integrations**
+- **TVMaze API:** For TV show data (no key required).
+- **Emergent Google Social Login:** Implemented using  to meet Apple's in-app browser requirements.
+- **Apple Sign In:** Partially implemented using . Backend code exists, but UI and Xcode capability are disabled.
+
+**Testing status**
+- **Testing agent used after significant changes:** NO
+- **Troubleshoot agent used after agent stuck in loop:** YES, for Xcode signing and Bundle ID issues.
+- **Test files created:** None.
+- **Known regressions:** None.
+
+**Credentials to test flow:**
+The user logs in with their own Google account on their Mac simulator. No demo account has been set up for Apple's review team.
+
+**What agent forgot to execute**
+- The agent did not implement the Account Deletion feature, which is an explicit requirement from Apple's App Review Guidelines (5.1.1(v)) for any app that allows account creation. This is a significant omission and likely cause for a future rejection if not addressed.</analysis>
