@@ -272,7 +272,7 @@ const Dashboard = ({ user, onLogout }) => {
       <div className="dashboard-content">
         <div className="welcome-section" data-testid="welcome-section">
           <h1>Welcome back, {user.name}!</h1>
-          <p>Here's what's coming up next</p>
+          <p>Here&apos;s what&apos;s coming up next</p>
         </div>
 
         {/* Upcoming Episodes */}
