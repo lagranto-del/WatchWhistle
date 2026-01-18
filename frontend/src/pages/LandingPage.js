@@ -281,19 +281,23 @@ const LandingPage = () => {
           width: 100%;
         }
 
-        .btn-apple {
-          background: #000;
-          color: white;
-          border: none;
-        }
-
-        .btn-apple:hover {
-          background: #1a1a1a;
-        }
-
-        .btn-apple:disabled {
-          opacity: 0.6;
+        .btn-large:disabled {
+          opacity: 0.7;
           cursor: not-allowed;
+        }
+
+        .loading-spinner {
+          width: 20px;
+          height: 20px;
+          border: 2px solid rgba(255,255,255,0.3);
+          border-top-color: white;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+          margin-right: 8px;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
         }
 
         .features-section {
