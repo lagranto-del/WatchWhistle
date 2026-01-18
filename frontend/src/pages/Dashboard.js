@@ -122,6 +122,21 @@ const Dashboard = ({ user, onLogout }) => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      await api.delete('/users/me');
+      toast.success('Account deleted successfully');
+      // Redirect to home after account deletion
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Failed to delete account:', error);
+      toast.error('Failed to delete account. Please try again.');
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   const unreadCount = notifications.filter(n => !n.read).length;
 
   if (loading) {
