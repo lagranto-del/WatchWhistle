@@ -447,12 +447,6 @@ const Dashboard = ({ user, onLogout }) => {
           font-weight: 600;
         }
 
-        .user-menu {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
         .user-avatar {
           width: 40px;
           height: 40px;
