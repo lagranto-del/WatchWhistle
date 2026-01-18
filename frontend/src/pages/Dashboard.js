@@ -706,7 +706,218 @@ const Dashboard = ({ user, onLogout }) => {
             width: auto;
           }
         }
+
+        /* User Dropdown Styles */
+        .user-menu {
+          position: relative;
+        }
+
+        .user-avatar-btn {
+          background: none;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          border-radius: 50%;
+        }
+
+        .user-avatar-placeholder {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: #ef4444;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 600;
+          font-size: 18px;
+        }
+
+        .user-dropdown {
+          position: absolute;
+          top: 100%;
+          right: 0;
+          margin-top: 8px;
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+          min-width: 220px;
+          z-index: 200;
+          overflow: hidden;
+        }
+
+        .dropdown-header {
+          padding: 16px;
+          background: #f9fafb;
+        }
+
+        .dropdown-name {
+          font-weight: 600;
+          color: #1f2937;
+          margin: 0 0 4px 0;
+        }
+
+        .dropdown-email {
+          font-size: 13px;
+          color: #6b7280;
+          margin: 0;
+          word-break: break-all;
+        }
+
+        .dropdown-divider {
+          height: 1px;
+          background: #e5e7eb;
+        }
+
+        .dropdown-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          width: 100%;
+          padding: 14px 16px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          text-align: left;
+          font-size: 14px;
+          color: #374151;
+          transition: background-color 0.2s;
+        }
+
+        .dropdown-item:hover {
+          background: #f3f4f6;
+        }
+
+        .dropdown-item:first-of-type {
+          color: #dc2626;
+        }
+
+        /* Delete Confirmation Modal */
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.6);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          padding: 16px;
+        }
+
+        .modal-content {
+          background: white;
+          border-radius: 16px;
+          max-width: 400px;
+          width: 100%;
+          padding: 24px;
+          text-align: center;
+        }
+
+        .modal-icon {
+          width: 64px;
+          height: 64px;
+          background: #fef2f2;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 16px;
+        }
+
+        .modal-icon svg {
+          color: #dc2626;
+        }
+
+        .modal-title {
+          font-size: 20px;
+          font-weight: 600;
+          color: #1f2937;
+          margin: 0 0 8px;
+        }
+
+        .modal-description {
+          font-size: 14px;
+          color: #6b7280;
+          margin: 0 0 24px;
+          line-height: 1.5;
+        }
+
+        .modal-actions {
+          display: flex;
+          gap: 12px;
+        }
+
+        .modal-btn {
+          flex: 1;
+          padding: 12px 16px;
+          border-radius: 10px;
+          font-weight: 500;
+          font-size: 14px;
+          cursor: pointer;
+          transition: opacity 0.2s;
+        }
+
+        .modal-btn-cancel {
+          background: #f3f4f6;
+          border: none;
+          color: #374151;
+        }
+
+        .modal-btn-cancel:hover {
+          background: #e5e7eb;
+        }
+
+        .modal-btn-delete {
+          background: #dc2626;
+          border: none;
+          color: white;
+        }
+
+        .modal-btn-delete:hover {
+          background: #b91c1c;
+        }
+
+        .modal-btn-delete:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
       `}</style>
+
+      {/* Delete Account Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="modal-overlay" data-testid="delete-modal">
+          <div className="modal-content">
+            <div className="modal-icon">
+              <Trash2 size={32} />
+            </div>
+            <h2 className="modal-title">Delete Account?</h2>
+            <p className="modal-description">
+              This will permanently delete your account and all your data including your favorite shows, watch history, and notifications. This action cannot be undone.
+            </p>
+            <div className="modal-actions">
+              <button 
+                className="modal-btn modal-btn-cancel"
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isDeleting}
+                data-testid="cancel-delete-button"
+              >
+                Cancel
+              </button>
+              <button 
+                className="modal-btn modal-btn-delete"
+                onClick={handleDeleteAccount}
+                disabled={isDeleting}
+                data-testid="confirm-delete-button"
+              >
+                {isDeleting ? 'Deleting...' : 'Delete Account'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
