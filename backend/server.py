@@ -345,6 +345,20 @@ async def logout(response: Response, user: User = Depends(get_current_user), ses
     response.delete_cookie(key="session_token", path="/")
     return {"message": "Logged out successfully"}
 
+@api_router.delete("/users/me")
+async def delete_user_account(user: User = Depends(get_current_user)):
+    """Delete user account and all associated data"""
+    user_id = user.id
+    
+    # Delete all user data from all collections
+    await db.users.delete_one({"id": user_id})
+    await db.user_sessions.delete_many({"user_id": user_id})
+    await db.shows.delete_many({"user_id": user_id})
+    await db.episodes.delete_many({"user_id": user_id})
+    await db.notifications.delete_many({"user_id": user_id})
+    
+    return {"message": "Account deleted successfully"}
+
 # ============= SHOW ROUTES =============
 
 @api_router.get("/shows/search")
