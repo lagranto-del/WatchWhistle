@@ -261,6 +261,61 @@ async def apple_signin(request: AppleSignInRequest, response: Response):
         logging.error(f"Apple sign-in error: {e}")
         raise HTTPException(status_code=500, detail="Error processing sign-in")
 
+@api_router.post("/auth/demo")
+async def demo_login(response: Response):
+    """Create a demo account session for testing"""
+    # Check if demo user exists
+    demo_email = "demo@watchwhistle.app"
+    user_doc = await db.users.find_one({"email": demo_email}, {"_id": 0})
+    
+    if not user_doc:
+        # Create demo user
+        user = User(
+            email=demo_email,
+            name="Demo User",
+            picture=""
+        )
+        user_dict = user.model_dump()
+        user_dict["created_at"] = user_dict["created_at"].isoformat()
+        await db.users.insert_one(user_dict)
+        user_id = user.id
+    else:
+        if isinstance(user_doc.get("created_at"), str):
+            user_doc["created_at"] = datetime.fromisoformat(user_doc["created_at"])
+            if user_doc["created_at"].tzinfo is None:
+                user_doc["created_at"] = user_doc["created_at"].replace(tzinfo=timezone.utc)
+        user = User(**user_doc)
+        user_id = user.id
+    
+    # Create session
+    session_token = str(uuid.uuid4())
+    expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+    
+    session = UserSession(
+        user_id=user_id,
+        session_token=session_token,
+        expires_at=expires_at
+    )
+    
+    session_dict = session.model_dump()
+    session_dict["expires_at"] = session_dict["expires_at"].isoformat()
+    session_dict["created_at"] = session_dict["created_at"].isoformat()
+    
+    await db.user_sessions.insert_one(session_dict)
+    
+    # Set httpOnly cookie
+    response.set_cookie(
+        key="session_token",
+        value=session_token,
+        httponly=True,
+        secure=True,
+        samesite="none",
+        path="/",
+        max_age=7*24*60*60
+    )
+    
+    return {"user": user.model_dump(), "session_token": session_token}
+
 @api_router.post("/auth/session")
 async def create_session(request: Request, response: Response):
     """Exchange session_id for session_token"""
