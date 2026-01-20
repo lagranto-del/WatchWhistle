@@ -144,6 +144,29 @@ const LandingPage = () => {
     navigate('/marketing');
   };
 
+  const handleDemoLogin = async () => {
+    if (isDemoLoading) return;
+    setIsDemoLoading(true);
+    
+    try {
+      await Haptics.impact({ style: ImpactStyle.Medium });
+    } catch (e) {
+      // Haptics not available on web
+    }
+    
+    try {
+      const response = await axios.post(`${API_URL}/api/auth/demo`);
+      if (response.data.user) {
+        window.location.href = '/dashboard';
+      }
+    } catch (error) {
+      console.error('Demo login error:', error);
+      alert('Demo login failed. Please try again.');
+    } finally {
+      setIsDemoLoading(false);
+    }
+  };
+
   return (
     <div className="landing-page">
       {/* Hero Section */}
