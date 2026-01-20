@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tv, Bell, Star, Search, Eye } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
 import { SignInWithApple } from '@capacitor-community/apple-sign-in';
+import { GenericOAuth2 } from '@capacitor-community/generic-oauth2';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -30,40 +30,63 @@ const LandingPage = () => {
       // Haptics not available on web
     }
     
-    const redirectUrl = `${window.location.origin}/dashboard`;
-    const authUrl = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
-    
-    // Use Safari View Controller on iOS/iPadOS, regular browser on web
-    if (Capacitor.getPlatform() === 'ios') {
+    // Check if running on iOS native app
+    if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
       try {
-        // Detect iPad by screen size (iPad has larger viewport)
-        const isIpad = window.innerWidth >= 768;
+        // Use ASWebAuthenticationSession via GenericOAuth2 for in-app authentication
+        // This is the Apple-approved method for OAuth
+        const oauth2Options = {
+          appId: "emergent-google-oauth",
+          authorizationBaseUrl: "https://auth.emergentagent.com/",
+          accessTokenEndpoint: "",
+          scope: "email profile",
+          responseType: "token",
+          pkceEnabled: false,
+          web: {
+            redirectUrl: window.location.origin + "/dashboard",
+            windowTarget: "_self"
+          },
+          ios: {
+            appId: "emergent-google-oauth",
+            responseType: "token",
+            redirectUrl: "com.tillywatchwhistle://callback",
+            // This ensures ASWebAuthenticationSession is used
+            siwaUseScope: true,
+          }
+        };
+
+        const result = await GenericOAuth2.authenticate(oauth2Options);
         
-        if (isIpad) {
-          // iPad requires explicit width/height for popover to work properly
-          await Browser.open({ 
-            url: authUrl,
-            presentationStyle: 'popover',
-            width: Math.min(window.innerWidth * 0.9, 600),
-            height: Math.min(window.innerHeight * 0.8, 700)
-          });
-        } else {
-          // iPhone uses fullscreen presentation
-          await Browser.open({ 
-            url: authUrl,
-            presentationStyle: 'fullscreen'
-          });
+        if (result && result.access_token_response) {
+          // Handle the OAuth response
+          const sessionId = result.access_token_response.session_id || result.access_token;
+          
+          if (sessionId) {
+            // Exchange session for our app's auth
+            const response = await axios.post(`${API_URL}/api/auth/session`, {}, {
+              headers: { "X-Session-ID": sessionId }
+            });
+            
+            if (response.data.user) {
+              window.location.href = '/dashboard';
+            }
+          }
         }
       } catch (error) {
-        console.error('Browser open error:', error);
-        // Fallback to regular navigation if Browser fails
+        console.error('OAuth error:', error);
+        // Fallback to web-based auth flow
+        const redirectUrl = `${window.location.origin}/dashboard`;
+        const authUrl = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
         window.location.href = authUrl;
       }
     } else {
+      // Web platform - use standard redirect
+      const redirectUrl = `${window.location.origin}/dashboard`;
+      const authUrl = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
       window.location.href = authUrl;
     }
     
-    // Reset loading state after a short delay (browser will redirect anyway)
+    // Reset loading state after a short delay
     setTimeout(() => setIsLoading(false), 3000);
   };
 
