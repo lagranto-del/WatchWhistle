@@ -13,6 +13,7 @@ const LandingPage = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isAppleLoading, setIsAppleLoading] = useState(false);
+  const [isDemoLoading, setIsDemoLoading] = useState(false);
   const [showAppleSignIn, setShowAppleSignIn] = useState(false);
 
   useEffect(() => {
