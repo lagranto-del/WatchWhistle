@@ -255,6 +255,29 @@ const LandingPage = () => {
               <Eye size={20} className="btn-icon" />
               Preview App
             </button>
+
+            {/* Demo Account Button - For Apple Review Testing */}
+            <button 
+              className="btn btn-demo btn-large" 
+              onClick={handleDemoLogin}
+              disabled={isDemoLoading}
+              data-testid="demo-login-button"
+            >
+              {isDemoLoading ? (
+                <>
+                  <span className="loading-spinner"></span>
+                  Loading...
+                </>
+              ) : (
+                <>
+                  <svg className="btn-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                  Try Demo Account
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>
