@@ -492,6 +492,17 @@ const LandingPage = () => {
           transform: translateY(-2px);
         }
 
+        .btn-demo {
+          background: #22c55e;
+          color: white;
+          border: none;
+        }
+
+        .btn-demo:hover {
+          background: #16a34a;
+          transform: translateY(-2px);
+        }
+
         .btn-large:disabled {
           opacity: 0.7;
           cursor: not-allowed;
