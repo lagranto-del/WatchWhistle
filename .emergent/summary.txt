@@ -1,109 +1,127 @@
 <analysis>**original_problem_statement:**
-The user wants to build a full-stack application named WatchWhistle that notifies users of new episodes for their favorite TV shows. The app must be submitted to the Apple App Store.
+The user wants to build a full-stack application named WatchWhistle that notifies users of new episodes for their favorite TV shows. The primary goal is to get the application approved for submission to the Apple App Store. The app has faced multiple rejections from Apple, primarily due to login flow issues and reviewers being unable to test the app's functionality.
 
 **PRODUCT REQUIREMENTS:**
 - **Data Source:** TV Maze API.
-- **Authentication:** Emergent-based Google social login. Apple Sign In was later requested.
+- **Authentication:** Emergent-based Google social login, Sign In with Apple, and a newly-added Demo Account login for reviewers.
 - **Core Features:**
     - Search for TV shows and add them to a favorites list.
     - View upcoming shows and episodes.
-    - Mark episodes as watched, with an undo feature.
+    - Mark episodes as watched.
     - Receive in-app notifications for new episodes.
     - Rate shows.
+    - Account Deletion feature (Apple requirement).
 - **Design & UI:** A red-themed UI with a movie theater background on the landing page.
 - **Native App & PWA:** The application must be a downloadable native Capacitor app for iPhones and must be mobile-responsive.
-- **App Store Submission & Rejection Feedback:**
-    - The app has been rejected multiple times by Apple for the following reasons:
-        1.  Being too similar to a web browsing experience.
-        2.  A blank screen bug on certain test devices.
-        3.  Using an external web browser for Google login instead of an in-app method.
-        4.  Including development-process artifacts in the app icon.
-        5.  (Upcoming Requirement) Apps with account creation must offer account deletion.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack application with a FastAPI backend and a React/Capacitor frontend. The application has been deployed to a production URL. All major bugs reported by Apple, including the blank screen and external browser login (fixed with Safari View Controller), have been addressed. The user has been guided through an extremely complex and lengthy process of fixing Xcode code signing issues, which were the main blocker for creating a submittable build. The user has successfully uploaded a new build with the latest fixes and correct screenshots to App Store Connect.
+A full-stack application with a FastAPI backend and a React/Capacitor frontend. The codebase has been modified to address Apple's feedback by adding an Account Deletion feature and a Try Demo Account button to simplify the review process. However, the user is completely blocked by severe and persistent local environment issues on their Mac. They are unable to create a successful build that reflects the latest code changes, as their simulators and physical devices consistently load old, cached versions of the app, or the build process fails entirely.
 
 **Last working item**:
-- **Last item agent was working:** The agent was guiding the user through the final steps of submitting the application to the App Store after a new build was successfully uploaded to App Store Connect. The user had resolved screenshot size issues and confirmed the app status was Ready for Review.
-- **Status:** USER VERIFICATION PENDING
-- **Agent Testing Done:** N/A
-- **Which testing method agent to use?** N/A. The user needs to complete the submission process on the App Store Connect website.
-- **User Testing Done:** Y
+- **Last item agent was working:** The agent was attempting to resolve a critical issue where the user's local builds were not reflecting the latest code changes. Specifically, the newly added Try Demo Account button was not working, and the Preview App button was incorrectly redirecting. The root cause was identified as an extremely persistent caching issue within the user's Xcode, simulator, and project build artifacts, compounded by potential local environment inconsistencies (e.g., Node.js version, corrupted dependencies). The user became very frustrated after numerous unsuccessful attempts to clean the cache and rebuild the project.
+- **Status:** BLOCKED
+- **Agent Testing Done:** Y
+- **Which testing method agent to use?** N/A. The immediate and critical task is to fix the user's local build environment. No functional testing is possible until the user can build and run the correct version of the app.
 
 **All Pending/In progress Issue list**:
-- **Issue 1: Recurring Xcode Code Signing and Provisioning Hell (P0)**
-  - **Description:** The user has consistently struggled with Xcode's code signing process, especially after adding new capabilities like Sign In with Apple. This has been the single largest blocker, consuming a vast amount of time. Issues include certificate mismatches, profile errors, wrong bundle IDs, and incorrect signing identities. The last successful archive was achieved by using manual signing with a specific distribution profile after fixing the Bundle ID and signing identity in the project files.
-  - **Attempted fixes:** Numerous attempts were made, including automatic vs. manual signing, creating/deleting multiple profiles and certificates, and deep-diving into the  file to manually set signing identities and team IDs.
-  - **Next debug checklist:** If this issue recurs, the next agent must:
-    1.  Verify the  in  is set to  for the **Release** configuration.
-    2.  Verify the  in the same file is set to .
-    3.  Instruct the user to use **Manual Signing** in Xcode for the **Release** configuration.
-    4.  Ensure the correct **Distribution Certificate** and **Provisioning Profile** (created for  and for **App Store Distribution**) are selected.
-  - **Why fix this issue and what will be achieved with the fix?** This is a critical, recurring blocker. Solving it definitively is the only way to allow the user to reliably submit app updates.
+- **Issue 1:  Local Build & Caching Hell on User's Mac (P0 - CRITICAL BLOCKER)**
+  - **Description:** The user is completely unable to build and run the latest version of the app. Every attempt results in old, cached apps appearing on simulators and physical devices, or the build process fails. This has led to significant user frustration and a complete halt in progress. The user's local project folder () is likely in a corrupted state.
+  - **Attempted fixes:** Numerous attempts to clear caches have failed. This includes deleting , , and  directories; running  to wipe simulators; clearing Xcode's ; and using HEAD is now at 0b37b70 Auto-generated changes to sync code. These piecemeal fixes have not worked.
+  - **Next debug checklist:**
+    1.  Acknowledge the user's frustration and propose a scorched earth reset as a definitive solution.
+    2.  Guide the user to **delete the entire project folder** ().
+    3.  Guide them to **clone the repository fresh** from GitHub.
+    4.  Guide them through a single, clean, step-by-step build process from the new folder.
+    5.  As a precaution, check the user's Node.js version (v20.20.0). An earlier build failed due to a Node v24 incompatibility. If problems persist, suggest using  to switch to a stable LTS version like v18 or v20.
+    6.  Insist on testing on a **physical device** first to bypass simulator issues.
+  - **Why fix this issue and what will be achieved with the fix?** This is the only way to unblock the user. All other tasks are irrelevant until the user can build the app.
   - **Status:** BLOCKED
   - **Is recurring issue?** Y
-  - **Should Test frontend/backend/both after fix?** N/A
-  - **Blocked on other issue:** This is a fundamental blocker for all App Store submissions.
+  - **Should Test frontend/backend/both after fix?** Both, starting with the frontend build process.
+
+- **Issue 2:  Functional Bugs: Demo Login Fails & Preview Redirects (P1)**
+  - **Description:** On the rare occasions a build seems to partially work, the Try Demo Account button fails, and the Preview App button incorrectly redirects to the Google login page.
+  - **Attempted fixes:** The agent corrected the  instance in  to ensure credentials were being sent correctly. These fixes are present in the latest code on GitHub but have not been successfully built or tested by the user due to Issue 1.
+  - **Next debug checklist:**
+    1.  This issue can only be addressed after Issue 1 is resolved.
+    2.  Once a clean build is running on a physical device, test the Try Demo Account button.
+    3.  If it fails, connect the device to the Mac and use Safari's Develop menu to inspect the web console for runtime JavaScript errors.
+  - **Why fix this issue and what will be achieved with the fix?** This provides Apple reviewers with the easy testing path they require, increasing the chances of app approval.
+  - **Status:** BLOCKED
+  - **Is recurring issue?** Y
+  - **Blocked on other issue:** Issue 1: Local Build & Caching Hell on User's Mac
 
 **In progress Task List**:
-- **Task 1: Implement Sign In with Apple (P1)**
-  - **Description:** This task was started to satisfy Apple's requirements but was paused due to the Xcode signing issues (Issue 1) it triggered. The backend endpoint and frontend UI have been partially implemented but are currently disabled to allow for submission.
-  - **Where to resume:**
-    1. Re-add the Sign In with Apple button to .
-    2. In Xcode, re-enable the Sign In with Apple capability.
-    3. Resolve the resulting code signing issues (see Issue 1).
-  - **What will be achieved with this?** This will provide a login method preferred by Apple and fully resolve the external browser login rejection feedback.
-  - **Status:** BLOCKED
-  - **Should Test frontend/backend/both after fix?** Both.
-  - **Blocked on something:** Issue 1: Recurring Xcode Code Signing and Provisioning Hell.
+- None. All work is blocked.
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks:**
-  - **(P0)** Wait for user to confirm if the current App Store submission was successful.
-  - **(P1)** Implement Account Deletion feature. Apple requires apps with account creation to also offer account deletion (Guideline 5.1.1(v)). This involves:
-    - Adding a Delete Account button in the user's profile/settings UI.
-    - Creating a new backend endpoint (e.g., ) that removes the user's data from all relevant collections (users, favorites, watched_episodes, notifications).
+  - **(P0)** Guide the user through a complete scorched earth reset of their local project to fix the build environment.
+  - **(P1)** Confirm the Demo Account and Preview App buttons work correctly on a physical device.
+  - **(P1)** Guide the user to archive and resubmit the fully working build to App Store Connect.
+  - **(P2)** Add the correct app icon during the final build process.
 - **Future Tasks:**
-  - **(P2)** Address Apple's too web-like feedback by redesigning parts of the UI to feel more native. The user suggested changing the list-based view of shows to a grid of poster icons.
+  - Fully implement and enable Sign In with Apple.
+  - Redesign the UI to feel more native and less web-like to address previous Apple feedback.
 
 **Completed work in this session**
-- **Core App Functionality & Bug Fixes:**
-  - **Blank Screen Fix:** Resolved a critical JS error on iOS by fixing the React 18 render method in  and a  function error in .
-  - **Production Deployment:** Deployed the backend and updated the app to use a production URL (), fixing a major cause of rejection by Apple's testers.
-  - **Login Flow Fix:** Replaced the external browser Google login with an in-app browser flow using Safari View Controller () in .
-  - **Database Logic:** Fixed a bug causing episodes to be pre-marked as watched by adding duplicate prevention logic in .
-  - **UI Fixes:** Corrected a CSS issue hiding the Share button and fixed an off-center layout on the .
-- **Build & Submission Process:**
-  - **Xcode Signing:** After extensive troubleshooting, fixed the project's Bundle ID () and code signing identity to allow a successful archive.
-  - **User Guidance:** Provided exhaustive step-by-step guidance to the non-technical user for building on their Mac, using Xcode, managing developer portal assets, and taking correctly sized screenshots.
-  - **App Icon:** Guided the user to replace the placeholder app icon.
+- Added an  endpoint to  for one-click demo account login.
+- Added an account deletion feature ( endpoint and UI in ).
+- Updated  to include four buttons: Google Login, Apple Sign In (iOS only), Preview App, and the new Try Demo Account button.
+- Removed a redundant Sign In button from the top navigation bar.
+- Corrected an issue where  was being used incorrectly without credentials, which was likely causing the demo login to fail.
+- Removed all Free marketing text from  per user request.
 
 **Earlier issues found/mentioned but not fixed**
-- **Issue 1: Account Deletion Feature is Missing**
-  - **Debug checklist:**
-    1.  Add a Delete Account button to the frontend UI (e.g., in a settings page or user profile).
-    2.  Create a  endpoint in .
-    3.  The endpoint should delete the user's document from the  collection.
-    4.  It should also delete all associated data from , , and  collections for that .
-  - **Why to solve this issue and what will be achieved with this?** This is required by Apple's App Review Guideline 5.1.1(v). The app will be rejected if this is not implemented.
-  - **Should Test frontend/backend/both after fix:** Both.
-  - **Is recurring issue?** N
+- The core issue of this session is the user's broken local build environment, which has not been resolved.
 
 **Known issue recurrence from previous fork**
-- None.
+- Xcode code signing issues are a known, major recurring problem that will likely surface again when the user attempts to archive the app for App Store submission.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
+- **Frontend:** React, Capacitor
 - **Backend:** FastAPI
-- **Frontend:** React
 - **Database:** MongoDB
-- **Native Wrapper:** Capacitor.js for iOS
-- **Authentication:** Google Social Login via Safari View Controller (). Apple Sign In () is partially implemented but disabled.
-- **Build Environment:** The user builds the final  on their personal Mac using Xcode.
+- **Build Tools:** The entire session revolved around debugging the user's local build toolchain: npm <command>
+
+Usage:
+
+npm install        install all the dependencies in your project
+npm install <foo>  add the <foo> dependency to your project
+npm test           run this project's tests
+npm run <foo>      run the script named <foo>
+npm <command> -h   quick help on <command>
+npm -l             display usage info for all commands
+npm help <term>    search for help on <term>
+npm help npm       more involved overview
+
+All commands:
+
+    access, adduser, audit, bugs, cache, ci, completion,
+    config, dedupe, deprecate, diff, dist-tag, docs, doctor,
+    edit, exec, explain, explore, find-dupes, fund, get, help,
+    help-search, hook, init, install, install-ci-test,
+    install-test, link, ll, login, logout, ls, org, outdated,
+    owner, pack, ping, pkg, prefix, profile, prune, publish,
+    query, rebuild, repo, restart, root, run-script, sbom,
+    search, set, shrinkwrap, star, stars, start, stop, team,
+    test, token, uninstall, unpublish, unstar, update, version,
+    view, whoami
+
+Specify configs in the ini-formatted file:
+    /root/.npmrc
+or on the command line via: npm <command> --key=value
+
+More configuration info: npm help config
+Configuration fields: npm help 7 config
+
+npm@10.8.2 /usr/lib/node_modules/npm, , , and .
+- **Primary Blocker:** Aggressive and persistent caching on the user's local machine across multiple layers (npm, Xcode, Simulator, physical device).
 
 **key DB schema**
 - **users:** Stores user profile information.
@@ -112,66 +130,103 @@ A full-stack application with a FastAPI backend and a React/Capacitor frontend. 
 - **notifications:** Stores new episode notifications ().
 
 **changes in tech stack**
-- Added  to implement in-app Google login.
-- Added (but later disabled)  for Apple Sign In.
-- Added  and  to the backend for Apple token verification.
+- No significant changes, but the session involved extensive debugging of existing stack components, especially npm <command>
+
+Usage:
+
+npm install        install all the dependencies in your project
+npm install <foo>  add the <foo> dependency to your project
+npm test           run this project's tests
+npm run <foo>      run the script named <foo>
+npm <command> -h   quick help on <command>
+npm -l             display usage info for all commands
+npm help <term>    search for help on <term>
+npm help npm       more involved overview
+
+All commands:
+
+    access, adduser, audit, bugs, cache, ci, completion,
+    config, dedupe, deprecate, diff, dist-tag, docs, doctor,
+    edit, exec, explain, explore, find-dupes, fund, get, help,
+    help-search, hook, init, install, install-ci-test,
+    install-test, link, ll, login, logout, ls, org, outdated,
+    owner, pack, ping, pkg, prefix, profile, prune, publish,
+    query, rebuild, repo, restart, root, run-script, sbom,
+    search, set, shrinkwrap, star, stars, start, stop, team,
+    test, token, uninstall, unpublish, unstar, update, version,
+    view, whoami
+
+Specify configs in the ini-formatted file:
+    /root/.npmrc
+or on the command line via: npm <command> --key=value
+
+More configuration info: npm help config
+Configuration fields: npm help 7 config
+
+npm@10.8.2 /usr/lib/node_modules/npm (dependency conflicts) and  (deployment target issues).
 
 **All files of reference**
-- : **CRITICAL FILE.** Frequently edited to fix code signing. Correct  is .
-- :  must match the bundle identifier.
-- : Contains the new Safari View Controller logic for Google login.
-- : Contains  safety checks.
-- : Contains all backend logic, including the un-used Apple auth endpoint.
+- : The root of the user's local project, which is in a corrupted state.
+- : Contains the logic for all login buttons. The latest version uses a credentialed  instance.
+- : Logic was simplified to prevent accidental redirects.
+- : Contains the new  and  endpoints.
+- : The iOS deployment target was consistently updated to '16.0' to resolve dependency issues.
 
 **Areas that need refactoring**:
-- The user's Apple Developer account has numerous old and confusing App IDs. It would be beneficial to clean this up, though it's outside the agent's direct control.
+- The user's entire local project directory needs to be deleted and cloned fresh to resolve the intractable caching and build issues.
 
 **key api endpoints**
-- : Handles Google Sign-In.
-- : Created for Apple Sign-In but currently not used by the frontend.
+- : New endpoint for demo login.
+- : New endpoint for account deletion.
+- 
+- 
 - 
 - 
 - 
 
 **Critical Info for New Agent**
-- **The user is not technical.** All instructions for their local Mac environment (Xcode, Terminal) must be extremely simple and literal.
-- **Xcode signing is the biggest pain point.** Assume any change to capabilities or project settings might break it. The last working configuration used **Manual Signing** for the **Release** build, targeting the  bundle ID.
-- The app's submission to Apple is pending. The next step is to see if the latest build (with Safari View Controller login) is approved.
-- **Account Deletion is a mandatory feature that is missing.** This should be the highest priority task after the current submission result is known to prevent another rejection.
+- **The user is extremely frustrated.** Your first priority must be to acknowledge this and propose a new, decisive scorched earth reset plan. Do not repeat the previous piecemeal cache-clearing steps.
+- **THE PROBLEM IS THE USER'S LOCAL ENVIRONMENT.** The server-side code is correct, as verified by Safari tests. Focus all your energy on fixing the user's local build process.
+- The scorched earth plan:
+    1. Delete the entire local project folder.
+    2. Clone fresh from GitHub.
+    3. Erase all simulators and Xcode caches again.
+    4. Guide a single, clean build from scratch.
+- **Prioritize testing on a physical device** to bypass simulator caching. The user has already connected a device and enabled developer mode.
+- The user's Node.js version (v24) has caused issues before. If build problems persist after a full reset, be prepared to guide them on installing  and switching to a stable LTS version (e.g., v18 or v20).
 
 **documents and test reports created in this job**
-- None.
+- /app/memory/PRD.md
 
 **Last 10 User Messages and any pending HUMAN messages**
-1. **User:** Ok I have it uploaded to Apple. Can you walk me through the steps to submit.
-2. **User:** (Re: Screenshots) It says they are the wrong size when I take them from the test tracker
-3. **User:** Lets do screensshots first. I have the app uploaded and ready but the screenshots are at the same time. I phone 15 pro max is not an option
-4. **User:** I cannot find manage run destinations?
-5. **User:** It says the dimenstions of the screenshots are wrong? Also, the sign in looks the same as it did before with the google?
-6. **User:** It says size 1290 x 2796?
-7. **User:** (Re: App Store Connect screenshot slots) The only options are 6.9 6.5 6.3 6.1 and then 5s
-8. **User:** That worked! Will a 13 mini work for the other size?
-9. **User:** I mean it says Ready for review
-10. **Agent:** Advised the user to click Submit for Review since the app status is Ready for Review.
-- **Pending:** Waiting for the user to confirm they have submitted the app and to hear back from Apple's review.
+1. **User:** Tested on Safari, the demo button works. (Confirms server-side code is correct).
+2. **Agent:** Suggests a final, more thorough Xcode cache clean and rebuild.
+3. **User:** Still sees the same old app on the device. Frustrated.
+4. **Agent:** Acknowledges frustration, confirms code is safe in Git, and suggests leaving it for the night.
+5. **User:** Asks to restore to the version previously submitted to Apple.
+6. **Agent:** Provides git commands to reset to the submitted version but warns it lacks the necessary fixes.
+7. **User:** Confirms they want to add the demo button and remove a duplicate sign-in button before re-testing.
+8. **Agent:** Makes the changes and guides the user to save to GitHub.
+9. **User:** After a restart and another failed build-and-test cycle, reports the demo button fails and the preview button redirects incorrectly.
+10. **Agent:** After a long debugging chain, identifies the local built files are still incorrect/outdated and the session ends with the user blocked.
 
 **Project Health Check:**
-- **Broken:** The Apple Sign In feature is incomplete and disabled due to unresolved code signing issues.
-- **Mocked:** None.
+- **Broken:** The user's local development environment is non-functional. They cannot build or test the latest version of the application due to deep-seated caching issues.
 
 **3rd Party Integrations**
-- **TVMaze API:** For TV show data (no key required).
-- **Emergent Google Social Login:** Implemented using  to meet Apple's in-app browser requirements.
-- **Apple Sign In:** Partially implemented using . Backend code exists, but UI and Xcode capability are disabled.
+- **TVMaze API:** For TV show data.
+- **Emergent Google Social Login:** Implemented via a redirect.
+- **Apple Sign In:** Partially implemented via .
+- **CocoaPods:** Manages iOS dependencies.
 
 **Testing status**
 - **Testing agent used after significant changes:** NO
-- **Troubleshoot agent used after agent stuck in loop:** YES, for Xcode signing and Bundle ID issues.
+- **Troubleshoot agent used after agent stuck in loop:** YES, extensively for the user's local environment.
 - **Test files created:** None.
-- **Known regressions:** None.
+- **Known regressions:** The user perceives a regression because they are unable to build a working app, but the root cause is environmental, not a code regression.
 
 **Credentials to test flow:**
-The user logs in with their own Google account on their Mac simulator. No demo account has been set up for Apple's review team.
+- A Try Demo Account button has been added, which should provide instant access for reviewers. No specific credentials are required for this flow.
 
 **What agent forgot to execute**
-- The agent did not implement the Account Deletion feature, which is an explicit requirement from Apple's App Review Guidelines (5.1.1(v)) for any app that allows account creation. This is a significant omission and likely cause for a future rejection if not addressed.</analysis>
+- The agent failed to break the user out of the local environment/caching doom loop. A more drastic scorched earth reset (deleting the entire project folder) should have been proposed earlier instead of repeating similar, less effective cache-clearing commands.</analysis>
