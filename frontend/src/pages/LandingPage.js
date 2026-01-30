@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Tv, Bell, Star, Search, Eye } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
-import axios from 'axios';
+import { api } from '../App';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
