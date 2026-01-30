@@ -53,7 +53,6 @@ const LandingPage = () => {
         <div style={{position:'absolute',top:0,left:0,right:0,bottom:0,background:'linear-gradient(to bottom,rgba(0,0,0,0.5) 0%,rgba(0,0,0,0.3) 50%,rgba(0,0,0,0.7) 100%)',zIndex:1}}></div>
         <nav style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'24px 0',maxWidth:'1200px',width:'100%',margin:'0 auto',position:'relative',zIndex:2}}>
           <div style={{display:'flex',alignItems:'center',gap:'12px',color:'white',fontSize:'24px',fontWeight:700}}><Tv size={32} color="#ef4444" /><span>WatchWhistle</span></div>
-          <button onClick={handleGoogleLogin} disabled={isLoading} style={{padding:'8px 16px',background:'transparent',color:'white',border:'2px solid white',borderRadius:'25px',cursor:'pointer'}}>{isLoading ? 'Loading...' : 'Sign In'}</button>
         </nav>
         <div style={{flex:1,display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',textAlign:'center',maxWidth:'900px',margin:'0 auto',position:'relative',zIndex:2}}>
           <div style={{background:'linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%)',border:'8px solid #333',borderRadius:'8px',padding:'40px 20px',marginBottom:'40px',boxShadow:'0 20px 60px rgba(0,0,0,0.9)',position:'relative',width:'100%',maxWidth:'800px'}}>
