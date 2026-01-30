@@ -195,10 +195,10 @@ const Dashboard = ({ user, onLogout }) => {
             className="nav-btn signout-btn" 
             onClick={onLogout}
             data-testid="signout-button"
-            style={{background: '#ef4444', color: 'white', padding: '8px 16px', borderRadius: '8px'}}
+            style={{background: '#ef4444', color: 'white', padding: '10px 20px', borderRadius: '8px', fontWeight: '600', minWidth: '100px'}}
           >
-            <LogOut size={20} />
-            <span>Sign Out</span>
+            <LogOut size={18} />
+            <span style={{marginLeft: '6px'}}>Sign Out</span>
           </button>
         </div>
       </nav>
