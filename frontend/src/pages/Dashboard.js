@@ -184,50 +184,14 @@ const Dashboard = ({ user, onLogout }) => {
               <span className="notification-badge" data-testid="notification-count">{unreadCount}</span>
             )}
           </button>
-          <div className="user-menu">
-            <button 
-              className="user-avatar-btn"
-              onClick={() => setShowUserMenu(!showUserMenu)}
-              data-testid="user-menu-button"
-            >
-              {user.picture ? (
-                <img src={user.picture} alt={user.name} className="user-avatar" data-testid="user-avatar" />
-              ) : (
-                <div className="user-avatar-placeholder" data-testid="user-avatar">
-                  {user.name?.charAt(0)?.toUpperCase() || 'U'}
-                </div>
-              )}
-            </button>
-            
-            {showUserMenu && (
-              <div className="user-dropdown" data-testid="user-dropdown">
-                <div className="dropdown-header">
-                  <p className="dropdown-name">{user.name}</p>
-                  <p className="dropdown-email">{user.email}</p>
-                </div>
-                <div className="dropdown-divider"></div>
-                <button 
-                  className="dropdown-item"
-                  onClick={() => {
-                    setShowUserMenu(false);
-                    setShowDeleteConfirm(true);
-                  }}
-                  data-testid="delete-account-button"
-                >
-                  <Trash2 size={16} />
-                  Delete Account
-                </button>
-                <button 
-                  className="dropdown-item"
-                  onClick={onLogout}
-                  data-testid="logout-button"
-                >
-                  <LogOut size={16} />
-                  Sign Out
-                </button>
-              </div>
-            )}
-          </div>
+          <button 
+            className="nav-btn signout-btn" 
+            onClick={onLogout}
+            data-testid="signout-button"
+          >
+            <LogOut size={20} />
+            <span>Sign Out</span>
+          </button>
         </div>
       </nav>
 
