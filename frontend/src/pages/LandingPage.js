@@ -118,7 +118,7 @@ const LandingPage = () => {
               Continue with Google
             </button>
             
-            {IS_NATIVE_IOS && (
+            {IS_IOS_APP && (
               <button 
                 onClick={handleAppleSignIn} 
                 data-testid="apple-login-btn"
