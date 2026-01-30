@@ -31,6 +31,15 @@ export const api = axios.create({
   timeout: 15000, // 15 second timeout
 });
 
+// Add interceptor to include session token from localStorage
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('session_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
