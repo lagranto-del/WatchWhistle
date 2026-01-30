@@ -108,10 +108,12 @@ function App() {
   const handleLogout = async () => {
     try {
       await api.post("/auth/logout");
+      localStorage.removeItem('session_token');
       setUser(null);
       window.location.href = "/";
     } catch (error) {
       console.error("Logout error:", error);
+      localStorage.removeItem('session_token');
     }
   };
 
