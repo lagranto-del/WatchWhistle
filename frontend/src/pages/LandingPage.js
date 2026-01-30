@@ -46,6 +46,10 @@ const LandingPage = () => {
       console.log('Demo login attempt...');
       const response = await api.post('/auth/demo'); 
       console.log('Demo response:', response.data);
+      if (response.data.session_token) {
+        // Store token for native app support (cookies don't work well in Capacitor)
+        localStorage.setItem('session_token', response.data.session_token);
+      }
       if (response.data.user) window.location.href = '/dashboard'; 
     }
     catch (error) { 
