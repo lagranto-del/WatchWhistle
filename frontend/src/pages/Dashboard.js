@@ -662,6 +662,10 @@ const Dashboard = ({ user, onLogout }) => {
             display: none;
           }
 
+          .nav-btn.signout-btn span {
+            display: inline;
+          }
+
           .dashboard-content {
             padding: 24px 16px;
           }
