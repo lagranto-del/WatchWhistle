@@ -115,8 +115,8 @@ const Marketing = () => {
 
           <div className="benefit-card">
             <Users className="benefit-icon" size={40} />
-            <h3>Always Free</h3>
-            <p>All features are free. No hidden fees, no premium tiers, no surprises.</p>
+            <h3>Full Access</h3>
+            <p>All features included. No hidden fees, no premium tiers, no surprises.</p>
           </div>
 
           <div className="benefit-card">
