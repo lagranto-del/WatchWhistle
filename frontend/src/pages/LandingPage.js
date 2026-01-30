@@ -38,7 +38,10 @@ const LandingPage = () => {
     } catch (error) { if (!error.message?.includes('canceled')) alert('Sign in failed. Try Demo Account.'); }
   };
 
-  const handlePreviewApp = () => { try { Haptics.impact({ style: ImpactStyle.Light }); } catch (e) {} navigate('/marketing'); };
+  const handlePreviewApp = async () => { 
+    try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { console.log('Haptics not available'); } 
+    navigate('/marketing'); 
+  };
 
   const handleDemoLogin = async () => {
     if (isDemoLoading) return;
