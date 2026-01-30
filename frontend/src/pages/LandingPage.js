@@ -30,7 +30,7 @@ const LandingPage = () => {
     try {
       const result = await SignInWithApple.authorize({ clientId: 'com.tillywatchwhistle', redirectURI: API_URL + '/api/auth/apple-callback', scopes: 'email name', state: Math.random().toString(36).substring(7), nonce: Math.random().toString(36).substring(7) });
       if (result.response?.identityToken) {
-        const response = await axios.post(API_URL + '/api/auth/apple-signin', { identityToken: result.response.identityToken, user: result.response.user, email: result.response.email, fullName: result.response.fullName });
+        const response = await api.post('/auth/apple-signin', { identityToken: result.response.identityToken, user: result.response.user, email: result.response.email, fullName: result.response.fullName });
         if (response.data.token) { localStorage.setItem('authToken', response.data.token); window.location.href = '/dashboard'; }
       }
     } catch (error) { if (!error.message?.includes('canceled')) alert('Sign in failed. Try Demo Account.'); }
@@ -42,7 +42,7 @@ const LandingPage = () => {
     if (isDemoLoading) return;
     setIsDemoLoading(true);
     try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) {}
-    try { const response = await axios.post(API_URL + '/api/auth/demo'); if (response.data.user) window.location.href = '/dashboard'; }
+    try { const response = await api.post('/auth/demo'); if (response.data.user) window.location.href = '/dashboard'; }
     catch (error) { alert('Demo login failed.'); }
     finally { setIsDemoLoading(false); }
   };
