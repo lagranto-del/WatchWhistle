@@ -185,12 +185,18 @@ const Dashboard = ({ user, onLogout }) => {
             )}
           </button>
           <button 
+            className="nav-btn" 
+            onClick={() => setShowDeleteConfirm(true)}
+            data-testid="settings-button"
+          >
+            <Settings size={20} />
+          </button>
+          <button 
             className="nav-btn signout-btn" 
             onClick={onLogout}
             data-testid="signout-button"
           >
             <LogOut size={20} />
-            <span>Sign Out</span>
           </button>
         </div>
       </nav>
