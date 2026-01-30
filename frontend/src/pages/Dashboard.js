@@ -167,7 +167,7 @@ const Dashboard = ({ user, onLogout }) => {
             data-testid="search-button"
           >
             <Search size={20} />
-            <span>Search Shows</span>
+            <span>Search</span>
           </button>
           <button 
             className="nav-btn notification-btn" 
@@ -195,8 +195,10 @@ const Dashboard = ({ user, onLogout }) => {
             className="nav-btn signout-btn" 
             onClick={onLogout}
             data-testid="signout-button"
+            style={{background: '#ef4444', color: 'white', padding: '8px 16px', borderRadius: '8px'}}
           >
             <LogOut size={20} />
+            <span>Sign Out</span>
           </button>
         </div>
       </nav>
