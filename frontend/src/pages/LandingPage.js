@@ -11,13 +11,11 @@ const LandingPage = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isDemoLoading, setIsDemoLoading] = useState(false);
-  const [showAppleSignIn, setShowAppleSignIn] = useState(false);
+  const [isIOS] = useState(() => Capacitor.getPlatform() === 'ios');
 
   useEffect(() => {
-    const platform = Capacitor.getPlatform();
-    console.log('Platform detected:', platform);
-    setShowAppleSignIn(platform === 'ios');
-  }, []);
+    console.log('Platform detected:', Capacitor.getPlatform(), 'isIOS:', isIOS);
+  }, [isIOS]);
 
   const handleGoogleLogin = async () => {
     if (isLoading) return;
