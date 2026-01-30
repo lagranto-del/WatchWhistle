@@ -37,9 +37,8 @@ const Marketing = () => {
             Rate, review, and keep your watchlist organized.
           </p>
           <button className="btn btn-large btn-primary" onClick={handleGetStarted}>
-            Start Tracking Free
+            Start Tracking
           </button>
-          <p className="hero-note">No credit card required • Free forever</p>
         </div>
       </section>
 
