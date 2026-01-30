@@ -6,15 +6,15 @@ import { api } from '../App';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Detect iOS once at module level - never changes
-const IS_IOS = Capacitor.getPlatform() === 'ios';
+// Check if running as native iOS app
+const IS_NATIVE_IOS = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
 
 const LandingPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDemoLoading, setIsDemoLoading] = useState(false);
 
   useEffect(() => {
-    console.log('LandingPage mounted, IS_IOS:', IS_IOS);
+    console.log('LandingPage - isNative:', Capacitor.isNativePlatform(), 'platform:', Capacitor.getPlatform(), 'IS_NATIVE_IOS:', IS_NATIVE_IOS);
   }, []);
 
   const handleGoogleLogin = async () => {
