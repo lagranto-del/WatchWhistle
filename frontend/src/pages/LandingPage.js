@@ -14,7 +14,9 @@ const LandingPage = () => {
   const [showAppleSignIn, setShowAppleSignIn] = useState(false);
 
   useEffect(() => {
-    setShowAppleSignIn(Capacitor.getPlatform() === 'ios');
+    const platform = Capacitor.getPlatform();
+    console.log('Platform detected:', platform);
+    setShowAppleSignIn(platform === 'ios');
   }, []);
 
   const handleGoogleLogin = async () => {
