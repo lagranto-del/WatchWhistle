@@ -183,9 +183,8 @@ const Marketing = () => {
           <h2>Ready to Start Tracking?</h2>
           <p>Join WatchWhistle today and never miss another episode of your favorite shows.</p>
           <button className="btn btn-large btn-primary" onClick={handleGetStarted}>
-            Get Started Free
+            Get Started
           </button>
-          <p className="cta-note">Takes less than 30 seconds • No credit card required</p>
         </div>
       </section>
 
