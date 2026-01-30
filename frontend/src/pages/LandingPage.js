@@ -40,7 +40,7 @@ const LandingPage = () => {
 
   const handlePreviewApp = async () => { 
     try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { console.log('Haptics not available'); } 
-    navigate('/marketing'); 
+    window.location.href = '/marketing'; 
   };
 
   const handleDemoLogin = async () => {
