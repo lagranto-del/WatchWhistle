@@ -42,8 +42,16 @@ const LandingPage = () => {
     if (isDemoLoading) return;
     setIsDemoLoading(true);
     try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) {}
-    try { const response = await api.post('/auth/demo'); if (response.data.user) window.location.href = '/dashboard'; }
-    catch (error) { alert('Demo login failed.'); }
+    try { 
+      console.log('Demo login attempt...');
+      const response = await api.post('/auth/demo'); 
+      console.log('Demo response:', response.data);
+      if (response.data.user) window.location.href = '/dashboard'; 
+    }
+    catch (error) { 
+      console.error('Demo error:', error);
+      alert('Demo login failed: ' + (error.message || 'Network error')); 
+    }
     finally { setIsDemoLoading(false); }
   };
 
