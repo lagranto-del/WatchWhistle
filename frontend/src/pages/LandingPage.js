@@ -6,15 +6,24 @@ import { api } from '../App';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Check if running as native iOS app
-const IS_NATIVE_IOS = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
+// Detect iOS and persist it - check on every load but store result
+const detectAndStoreIOS = () => {
+  const isNativeIOS = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
+  if (isNativeIOS) {
+    localStorage.setItem('is_ios_app', 'true');
+  }
+  // Return true if either current detection or stored value is true
+  return isNativeIOS || localStorage.getItem('is_ios_app') === 'true';
+};
+
+const IS_IOS_APP = detectAndStoreIOS();
 
 const LandingPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDemoLoading, setIsDemoLoading] = useState(false);
 
   useEffect(() => {
-    console.log('LandingPage - isNative:', Capacitor.isNativePlatform(), 'platform:', Capacitor.getPlatform(), 'IS_NATIVE_IOS:', IS_NATIVE_IOS);
+    console.log('LandingPage - IS_IOS_APP:', IS_IOS_APP, 'stored:', localStorage.getItem('is_ios_app'));
   }, []);
 
   const handleGoogleLogin = async () => {
