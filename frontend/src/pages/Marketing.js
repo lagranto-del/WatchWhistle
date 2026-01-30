@@ -137,7 +137,7 @@ const Marketing = () => {
         <div className="steps-container">
           <div className="step-card">
             <div className="step-number">1</div>
-            <h3>Sign Up Free</h3>
+            <h3>Sign Up</h3>
             <p>Create your account in seconds with Google sign-in. No complicated forms.</p>
           </div>
 
