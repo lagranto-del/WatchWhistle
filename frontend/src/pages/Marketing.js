@@ -168,7 +168,7 @@ const Marketing = () => {
           </div>
           <div className="stat-item">
             <div className="stat-number">100%</div>
-            <div className="stat-label">Free Forever</div>
+            <div className="stat-label">Full Access</div>
           </div>
           <div className="stat-item">
             <div className="stat-number">⭐⭐⭐⭐⭐</div>
