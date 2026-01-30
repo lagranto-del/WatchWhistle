@@ -5,10 +5,18 @@ import { Tv, Bell, Star, Search, Check, Calendar, Users, Smartphone, Zap } from 
 const Marketing = () => {
   const navigate = useNavigate();
 
-  const handleGetStarted = () => {
+  const handleGetStarted = (e) => {
+    // Prevent any accidental triggers
+    if (e) e.preventDefault();
+    console.log('Get Started clicked');
     const redirectUrl = `${window.location.origin}/dashboard`;
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
+
+  // Log when component mounts to help debug
+  React.useEffect(() => {
+    console.log('Marketing page loaded');
+  }, []);
 
   return (
     <div className="marketing-page">
