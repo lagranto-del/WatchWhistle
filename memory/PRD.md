@@ -1,115 +1,95 @@
 # WatchWhistle - Product Requirements Document
 
 ## Original Problem Statement
-Build a full-stack application named "WatchWhistle" that notifies users of new episodes for their favorite TV shows. The app must be submitted to the Apple App Store.
+Build a full-stack application named "WatchWhistle" that notifies users of new episodes for their favorite TV shows. The primary goal is to get the application approved for submission to the Apple App Store.
 
-## Target Users
-- TV show enthusiasts who want to track when new episodes air
-- Users who manage multiple shows across different networks/streaming services
+## User Personas
+- TV show enthusiasts who want to track multiple shows
+- Users who want notifications when new episodes air
+- Apple App Store reviewers (need easy testing path)
 
 ## Core Requirements
 - **Data Source:** TV Maze API
-- **Authentication:** Google Social Login + Apple Sign In (for iOS)
+- **Authentication:** 
+  - Emergent-based Google social login
+  - Sign In with Apple (iOS only)
+  - Demo Account login for reviewers
 - **Core Features:**
-  - Search for TV shows and add them to a favorites list
-  - View upcoming shows and episodes
-  - Mark episodes as watched, with an "undo" feature
-  - Receive in-app notifications for new episodes
+  - Search for TV shows and add to favorites
+  - View upcoming episodes
+  - Mark episodes as watched
+  - In-app notifications for new episodes
   - Rate shows
-  - Preview App mode for reviewers
+  - Account deletion (Apple requirement)
 - **Design:** Red-themed UI with movie theater background
-- **Platform:** Native iOS app via Capacitor, mobile-responsive web
+- **Platform:** Native Capacitor app for iOS, mobile-responsive
 
-## Tech Stack
-- **Backend:** FastAPI (Python)
-- **Frontend:** React
-- **Database:** MongoDB
-- **Native Wrapper:** Capacitor.js for iOS
-- **Authentication:** Emergent Google Social Login + Apple Sign In
+## Technical Architecture
 
-## Key Database Collections
-- `users` - User profiles
-- `user_sessions` - Authentication sessions
-- `shows` - User's favorite shows
-- `episodes` - Episodes for tracked shows
-- `notifications` - New episode notifications
+### Frontend
+- React 19
+- Capacitor for iOS native app
+- Tailwind CSS
+- Lucide React icons
+- Axios for API calls
 
-## API Endpoints
-- `POST /api/auth/session` - Google login session exchange
-- `POST /api/auth/apple-signin` - Apple Sign In authentication
-- `POST /api/auth/logout` - Logout
-- `GET /api/auth/me` - Get current user
-- `DELETE /api/users/me` - Delete user account (Apple requirement)
-- `GET /api/shows/search` - Search TV shows
-- `POST /api/shows/favorites` - Add show to favorites
-- `GET /api/shows/favorites` - Get favorite shows
-- `DELETE /api/shows/favorites/{id}` - Remove favorite
+### Backend
+- FastAPI (Python)
+- MongoDB database
+
+### Key Files
+- `/app/frontend/src/pages/LandingPage.js` - Login buttons (Google, Apple, Demo)
+- `/app/frontend/src/pages/Dashboard.js` - Main app view with shows
+- `/app/frontend/src/pages/SearchShows.js` - Search functionality
+- `/app/backend/server.py` - API endpoints
+
+### Key API Endpoints
+- `POST /api/auth/demo` - Demo account login
+- `POST /api/auth/google` - Google OAuth
+- `POST /api/auth/apple-signin` - Apple Sign In
+- `DELETE /api/users/me` - Account deletion
+- `GET /api/shows/favorites` - Get user's favorite shows
 - `GET /api/episodes/upcoming` - Get upcoming episodes
-- `PUT /api/episodes/{id}/watched` - Mark episode watched
-- `GET /api/notifications` - Get notifications
 
----
+## What's Been Implemented
 
-## Implementation Status
+### January 30, 2026
+- ✅ Fixed Node.js version issues (nvm, Node 20 LTS)
+- ✅ Resolved npm dependency conflicts
+- ✅ Fixed CORS for native iOS app
+- ✅ Implemented localStorage token auth for Capacitor
+- ✅ Demo Account button working
+- ✅ Apple Sign In button persistence (localStorage detection)
+- ✅ Visible Sign Out button on Dashboard
+- ✅ Fresh iOS project build
+- ✅ App submitted to Apple App Store
 
-### Completed Features ✅
-- [x] Core app functionality (search, favorites, episodes, notifications)
-- [x] Google Social Login via Safari View Controller
-- [x] Apple Sign In integration
-- [x] iPad responsiveness fix for Browser popup
-- [x] Account Deletion feature (Apple requirement 5.1.1(v))
-- [x] Preview App button for reviewers
-- [x] Red-themed theater UI
-- [x] Production deployment
+### Previous Work
+- Demo login endpoint (`/api/auth/demo`)
+- Account deletion feature
+- Google OAuth integration
+- TV Maze API integration
+- Episode tracking and notifications
 
-### App Store Submission History
-- **Rejection 1:** "Too similar to web browsing experience"
-- **Rejection 2:** Blank screen bug on test devices
-- **Rejection 3:** External browser for Google login (fixed with Safari View Controller)
-- **Rejection 4:** Development artifacts in app icon
-- **Rejection 5 (Jan 2026):** iPad buttons unresponsive - FIXED
-- **Current:** Resubmitted with fixes (Jan 18, 2026)
+## App Store Submission Status
+- **Version:** 4.0
+- **Status:** Waiting for Review (submitted Jan 30, 2026)
+- **Key reviewer note:** "Try Demo Account" button for easy testing
 
-### Fixes Applied (Jan 18, 2026)
-1. iPad Browser popup now uses explicit width/height for proper display
-2. Restored all 3 buttons: Google, Apple, Preview App
-3. Added Account Deletion in user dropdown menu
-4. iOS deployment target updated to 16.0
-5. Clean Xcode build with updated Podfile
+## Known Issues / Future Work
+- Sign In with Apple needs full implementation
+- UI could be more "native" feeling
+- Push notifications not yet implemented
 
----
+## Database Schema
+- **users:** User profiles
+- **favorites:** User's favorite shows (user_id, show_id)
+- **watched_episodes:** Tracked episodes (user_id, episode_id)
+- **notifications:** New episode notifications (user_id)
+- **user_sessions:** Authentication sessions
 
-## Pending/Future Tasks
-
-### P1 - High Priority
-- [ ] Wait for Apple review feedback
-- [ ] Monitor for any new rejection issues
-
-### P2 - Enhancements
-- [ ] Redesign UI to feel more "native" (grid of poster icons)
-- [ ] Push notifications for new episodes
-- [ ] Widget support
-
-### P3 - Backlog
-- [ ] Social features (share watchlists)
-- [ ] Multiple user profiles
-- [ ] Streaming service availability info
-
----
-
-## Key Configuration
-
-### Bundle ID
-`com.tillywatchwhistle`
-
-### Important Files
-- `/app/frontend/capacitor.config.json` - Capacitor config
-- `/app/frontend/ios/App/App.xcworkspace` - Xcode project
-- `/app/frontend/src/pages/LandingPage.js` - Login page with 3 buttons
-- `/app/frontend/src/pages/Dashboard.js` - Main dashboard with account deletion
-- `/app/backend/server.py` - All backend endpoints
-
-### Xcode Settings
-- Deployment Target: iOS 16.0
-- Signing: Manual with Distribution profile
-- Capabilities: Sign In with Apple enabled
+## Environment Setup Notes
+- Node.js 20+ required (use nvm)
+- `.npmrc` with `legacy-peer-deps=true` for dependency resolution
+- CORS origins include `capacitor://localhost` for iOS app
+- Token stored in localStorage for native app auth
