@@ -2,6 +2,10 @@
   "appId": "com.tillywatchwhistle",
   "appName": "WatchWhistle",
   "webDir": "build",
+  "server": {
+    "allowNavigation": ["*"],
+    "cleartext": true
+  },
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 0,
@@ -11,6 +15,9 @@
       "showSpinner": false,
       "splashFullScreen": true,
       "splashImmersive": true
+    },
+    "CapacitorHttp": {
+      "enabled": true
     }
   }
 }
