@@ -12,8 +12,8 @@ Build a full-stack application named "WatchWhistle" that notifies users of new e
 - **Data Source:** TV Maze API
 - **Authentication:** 
   - Emergent-based Google social login
-  - Sign In with Apple (iOS only)
-  - Demo Account login for reviewers
+  - Sign In with Apple (iOS only) - fails gracefully with helpful message
+  - Demo Account login for reviewers (PRIMARY testing method)
 - **Core Features:**
   - Search for TV shows and add to favorites
   - View upcoming episodes
@@ -22,7 +22,7 @@ Build a full-stack application named "WatchWhistle" that notifies users of new e
   - Rate shows
   - Account deletion (Apple requirement)
 - **Design:** Red-themed UI with movie theater background
-- **Platform:** Native Capacitor app for iOS, mobile-responsive
+- **Platform:** Native Capacitor app for iOS (iPhone + iPad), mobile-responsive
 
 ## Technical Architecture
 
@@ -36,6 +36,7 @@ Build a full-stack application named "WatchWhistle" that notifies users of new e
 ### Backend
 - FastAPI (Python)
 - MongoDB database
+- Hosted on Emergent preview server
 
 ### Key Files
 - `/app/frontend/src/pages/LandingPage.js` - Login buttons (Google, Apple, Demo)
@@ -51,33 +52,41 @@ Build a full-stack application named "WatchWhistle" that notifies users of new e
 - `GET /api/shows/favorites` - Get user's favorite shows
 - `GET /api/episodes/upcoming` - Get upcoming episodes
 
+## App Store Submission History
+
+### Build 14 - February 6, 2026 (Current)
+- Fixed CORS configuration for mobile apps
+- Added App Transport Security settings
+- Tested on iPad Air 11-inch (Apple's test device)
+- Demo Account working on all devices
+
+### Build 13 - January 30, 2026
+- Rejected: Network Error on Apple's test devices
+- Issue: CORS was set to `*` with credentials (not allowed)
+
+### Previous Builds
+- Multiple rejections due to login flow issues
+- Apple reviewers couldn't test app functionality
+
 ## What's Been Implemented
+
+### February 6, 2026
+- ✅ Fixed CORS (specific origins instead of *)
+- ✅ Added App Transport Security to Info.plist
+- ✅ Updated Capacitor config for network navigation
+- ✅ Tested on iPad Air 11-inch simulator
+- ✅ Submitted Build 14
 
 ### January 30, 2026
 - ✅ Fixed Node.js version issues (nvm, Node 20 LTS)
 - ✅ Resolved npm dependency conflicts
-- ✅ Fixed CORS for native iOS app
 - ✅ Implemented localStorage token auth for Capacitor
 - ✅ Demo Account button working
-- ✅ Apple Sign In button persistence (localStorage detection)
+- ✅ Apple Sign In button with graceful error handling
 - ✅ Visible Sign Out button on Dashboard
-- ✅ Fresh iOS project build
-- ✅ App submitted to Apple App Store
-
-### Previous Work
-- Demo login endpoint (`/api/auth/demo`)
-- Account deletion feature
-- Google OAuth integration
-- TV Maze API integration
-- Episode tracking and notifications
-
-## App Store Submission Status
-- **Version:** 4.0
-- **Status:** Waiting for Review (submitted Jan 30, 2026)
-- **Key reviewer note:** "Try Demo Account" button for easy testing
 
 ## Known Issues / Future Work
-- Sign In with Apple needs full implementation
+- Sign In with Apple needs full backend implementation
 - UI could be more "native" feeling
 - Push notifications not yet implemented
 
@@ -91,5 +100,13 @@ Build a full-stack application named "WatchWhistle" that notifies users of new e
 ## Environment Setup Notes
 - Node.js 20+ required (use nvm)
 - `.npmrc` with `legacy-peer-deps=true` for dependency resolution
-- CORS origins include `capacitor://localhost` for iOS app
+- CORS origins: capacitor://localhost, ionic://localhost, file://, etc.
 - Token stored in localStorage for native app auth
+- App Transport Security allows arbitrary loads
+
+## App Store Review Notes Template
+```
+Demo Account tested and working on iPad Air 11-inch. 
+Tap the green "Try Demo Account" button for instant access to all features. 
+No login required.
+```
