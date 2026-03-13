@@ -135,10 +135,13 @@ async def get_current_user(request: Request, session_token: Optional[str] = Cook
 
 class AppleSignInRequest(BaseModel):
     identityToken: str
-    user: str
+    user: Optional[str] = None
     email: Optional[str] = None
     fullName: Optional[dict] = None
+    givenName: Optional[str] = None
+    familyName: Optional[str] = None
 
+@api_router.post("/auth/apple")
 @api_router.post("/auth/apple-signin")
 async def apple_signin(request: AppleSignInRequest, response: Response):
     """Handle Apple Sign In authentication"""
