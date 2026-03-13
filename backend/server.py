@@ -172,7 +172,7 @@ async def apple_signin(request: AppleSignInRequest, response: Response):
             request.identityToken,
             public_key.to_pem().decode(),
             algorithms=['RS256'],
-            audience='com.watchwhistle.app',
+            audience='com.tillywatchwhistle',
             options={"verify_exp": True}
         )
         
