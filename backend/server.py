@@ -259,6 +259,7 @@ async def apple_signin(request: AppleSignInRequest, response: Response):
         
         return {
             "token": session_token,
+            "session_token": session_token,
             "user_id": user_id,
             "email": user_email,
             "name": user_name
