@@ -194,6 +194,13 @@ async def apple_signin(request: AppleSignInRequest, response: Response):
                 full_name = f"{given_name} {family_name}"
             elif given_name:
                 full_name = given_name
+        elif request.givenName or request.familyName:
+            given_name = request.givenName or ''
+            family_name = request.familyName or ''
+            if given_name and family_name:
+                full_name = f"{given_name} {family_name}"
+            elif given_name:
+                full_name = given_name
         
         # Check if user exists by apple_id
         user_doc = await db.users.find_one({"apple_id": apple_user_id}, {"_id": 0})
