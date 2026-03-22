@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Tv, Bell, Star, Search } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
+import { Browser } from '@capacitor/browser';
+import { App } from '@capacitor/app';
 import { api } from '../App';
 
 const LandingPage = () => {
@@ -10,6 +12,84 @@ const LandingPage = () => {
 
   useEffect(() => {
     console.log('LandingPage - Platform:', Capacitor.getPlatform(), 'isNative:', Capacitor.isNativePlatform());
+    
+    // Listen for app URL open events (deep links from OAuth callback)
+    const setupDeepLinkListener = async () => {
+      try {
+        await App.addListener('appUrlOpen', async (event) => {
+          console.log('App URL opened:', event.url);
+          
+          // Check if this is an auth callback
+          if (event.url.includes('auth/success') || event.url.includes('session_token=')) {
+            // Parse the URL to get session token
+            let sessionToken = null;
+            try {
+              // Handle both watchwhistle:// and https:// schemes
+              const urlStr = event.url.replace('watchwhistle://', 'https://dummy.com/');
+              const url = new URL(urlStr);
+              sessionToken = url.searchParams.get('session_token');
+            } catch (e) {
+              // Fallback: extract token with regex
+              const match = event.url.match(/session_token=([^&]+)/);
+              if (match) sessionToken = decodeURIComponent(match[1]);
+            }
+            
+            if (sessionToken) {
+              console.log('Session token received from deep link');
+              localStorage.setItem('session_token', sessionToken);
+              
+              // Close the browser if it's still open
+              try {
+                await Browser.close();
+              } catch (e) {
+                console.log('Browser already closed or not available');
+              }
+              
+              // Redirect to dashboard
+              window.location.href = '/dashboard';
+            }
+          } else if (event.url.includes('auth/error')) {
+            console.log('Auth error received');
+            setIsAppleLoading(false);
+            try {
+              await Browser.close();
+            } catch (e) {}
+          }
+        });
+        console.log('Deep link listener set up');
+      } catch (e) {
+        console.log('Could not set up deep link listener:', e);
+      }
+    };
+    
+    // Listen for browser finished event
+    const setupBrowserListener = async () => {
+      try {
+        await Browser.addListener('browserFinished', () => {
+          console.log('Browser closed');
+          setIsAppleLoading(false);
+        });
+      } catch (e) {
+        console.log('Could not set up browser listener:', e);
+      }
+    };
+    
+    setupDeepLinkListener();
+    setupBrowserListener();
+    
+    // Also check URL params on page load (for web fallback)
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionToken = urlParams.get('session_token');
+    if (sessionToken) {
+      localStorage.setItem('session_token', sessionToken);
+      window.location.href = '/dashboard';
+    }
+    
+    // Cleanup listeners on unmount
+    return () => {
+      App.removeAllListeners().catch(() => {});
+      Browser.removeAllListeners().catch(() => {});
+    };
   }, []);
 
   const handleAppleSignIn = async () => {
@@ -18,42 +98,37 @@ const LandingPage = () => {
     try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) {}
     
     try {
-      const { SignInWithApple } = await import('@capacitor-community/apple-sign-in');
+      console.log('Initiating Apple Sign In via Safari View Controller...');
       
-      // For native iOS, only scopes are needed - clientId is for web only
-      const options = {
-        scopes: 'email name'
-      };
+      // Get the authorization URL from our backend
+      const response = await api.get('/auth/apple/login');
+      const { url } = response.data;
       
-      console.log('Calling SignInWithApple.authorize with options:', options);
-      const result = await SignInWithApple.authorize(options);
+      console.log('Opening Apple auth URL in Safari View Controller:', url);
       
-      console.log('Apple Sign In result:', result);
+      // Open in Safari View Controller (in-app browser)
+      // This is Apple's recommended approach
+      await Browser.open({
+        url: url,
+        presentationStyle: 'fullscreen',
+        toolbarColor: '#000000'
+      });
       
-      if (result.response?.identityToken) {
-        // Send to backend for verification and user creation
-        const response = await api.post('/auth/apple', { 
-          identityToken: result.response.identityToken, 
-          user: result.response.user || null, 
-          email: result.response.email || null, 
-          givenName: result.response.givenName || null,
-          familyName: result.response.familyName || null
-        });
-        
-        console.log('Backend response:', response.data);
-        
-        if (response.data.session_token) {
-          localStorage.setItem('session_token', response.data.session_token);
-          window.location.href = '/dashboard';
-        }
-      }
+      // The browser will redirect back to our callback URL
+      // which will then redirect to our app via deep link
+      // The deep link listener above will handle the session token
+      
+      // Reset loading state after a delay (user might cancel)
+      setTimeout(() => {
+        setIsAppleLoading(false);
+      }, 30000);
+      
     } catch (error) { 
       console.error('Apple Sign In error:', error);
+      setIsAppleLoading(false);
       if (!error.message?.includes('canceled') && !error.message?.includes('cancelled')) {
         alert('Apple Sign In failed. Please try again or use Demo Account.'); 
       }
-    } finally {
-      setIsAppleLoading(false);
     }
   };
 

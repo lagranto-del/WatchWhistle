@@ -5,6 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import json
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
@@ -271,6 +272,331 @@ async def apple_signin(request: AppleSignInRequest, response: Response):
     except Exception as e:
         logging.error(f"Apple sign-in error: {e}")
         raise HTTPException(status_code=500, detail="Error processing sign-in")
+
+# ============= APPLE SIGN IN - WEB OAUTH FLOW (Safari View Controller) =============
+# This implements Apple's recommended approach using in-app browser
+
+import secrets
+from fastapi.responses import HTMLResponse
+from urllib.parse import urlencode
+
+# Store OAuth states (in production, use Redis)
+apple_oauth_states = {}
+
+# Apple OAuth Configuration
+APPLE_SERVICE_ID = "com.tillywatchwhistle.web"  # Your Services ID from Apple Developer
+APPLE_TEAM_ID = os.environ.get("APPLE_TEAM_ID", "")
+APPLE_KEY_ID = os.environ.get("APPLE_KEY_ID", "")
+APPLE_PRIVATE_KEY = os.environ.get("APPLE_PRIVATE_KEY", "")
+
+def get_apple_redirect_uri():
+    """Get the redirect URI based on environment"""
+    backend_url = os.environ.get("BACKEND_URL", "https://watchwhistle-production.up.railway.app")
+    return f"{backend_url}/api/auth/apple/callback"
+
+def generate_apple_client_secret():
+    """Generate JWT client secret for Apple token exchange"""
+    import jwt as pyjwt
+    
+    if not APPLE_TEAM_ID or not APPLE_KEY_ID or not APPLE_PRIVATE_KEY:
+        return None
+    
+    now = datetime.now(timezone.utc)
+    payload = {
+        "iss": APPLE_TEAM_ID,
+        "sub": APPLE_SERVICE_ID,
+        "aud": "https://appleid.apple.com",
+        "iat": now,
+        "exp": now + timedelta(minutes=5),
+    }
+    
+    # The private key should be in PEM format
+    private_key = APPLE_PRIVATE_KEY.replace("\\n", "\n")
+    
+    try:
+        client_secret = pyjwt.encode(
+            payload,
+            private_key,
+            algorithm="ES256",
+            headers={"kid": APPLE_KEY_ID}
+        )
+        return client_secret
+    except Exception as e:
+        logging.error(f"Failed to generate Apple client secret: {e}")
+        return None
+
+@api_router.get("/auth/apple/login")
+async def initiate_apple_web_auth():
+    """
+    Initiate Apple Sign In OAuth flow using web-based authentication.
+    Returns the authorization URL to open in Safari View Controller.
+    """
+    # Generate secure state parameter for CSRF protection
+    state = secrets.token_urlsafe(32)
+    apple_oauth_states[state] = {
+        "created_at": datetime.now(timezone.utc),
+        "used": False
+    }
+    
+    # Clean up old states (older than 10 minutes)
+    cutoff = datetime.now(timezone.utc) - timedelta(minutes=10)
+    expired_states = [s for s, data in apple_oauth_states.items() 
+                      if data["created_at"] < cutoff]
+    for s in expired_states:
+        del apple_oauth_states[s]
+    
+    params = {
+        "response_type": "code id_token",
+        "client_id": APPLE_SERVICE_ID,
+        "redirect_uri": get_apple_redirect_uri(),
+        "response_mode": "form_post",
+        "scope": "name email",
+        "state": state,
+    }
+    
+    auth_url = f"https://appleid.apple.com/auth/authorize?{urlencode(params)}"
+    
+    return {
+        "url": auth_url,
+        "state": state
+    }
+
+@api_router.post("/auth/apple/callback")
+async def handle_apple_web_callback(request: Request, response: Response):
+    """
+    Handle Apple's OAuth callback with authorization code.
+    This is called by Apple after user authorizes the app.
+    Returns an HTML page that redirects back to the Capacitor app.
+    """
+    # Get form data (Apple uses form_post response mode)
+    form_data = await request.form()
+    
+    code = form_data.get("code")
+    id_token = form_data.get("id_token")
+    state = form_data.get("state")
+    user_data_str = form_data.get("user")  # Only provided on first login
+    error = form_data.get("error")
+    
+    logging.info(f"Apple callback received - code: {bool(code)}, id_token: {bool(id_token)}, state: {bool(state)}, error: {error}")
+    
+    if error:
+        logging.error(f"Apple OAuth error: {error}")
+        return HTMLResponse(content=f"""
+        <html>
+            <head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+            <body style="font-family: -apple-system, sans-serif; padding: 40px; text-align: center;">
+                <h2>Sign In Failed</h2>
+                <p>Apple Sign In was cancelled or failed.</p>
+                <p>Please close this window and try again.</p>
+                <script>
+                    // Try to redirect back to app
+                    setTimeout(function() {{
+                        window.location.href = 'watchwhistle://auth/error?message=' + encodeURIComponent('{error}');
+                    }}, 2000);
+                </script>
+            </body>
+        </html>
+        """)
+    
+    if not id_token:
+        return HTMLResponse(content="""
+        <html>
+            <head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+            <body style="font-family: -apple-system, sans-serif; padding: 40px; text-align: center;">
+                <h2>Sign In Failed</h2>
+                <p>No identity token received from Apple.</p>
+                <p>Please close this window and try again.</p>
+            </body>
+        </html>
+        """)
+    
+    # Validate state parameter (CSRF protection)
+    if state and state in apple_oauth_states:
+        if apple_oauth_states[state]["used"]:
+            return HTMLResponse(content="""
+            <html>
+                <head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+                <body style="font-family: -apple-system, sans-serif; padding: 40px; text-align: center;">
+                    <h2>Session Expired</h2>
+                    <p>This login session has already been used.</p>
+                    <p>Please close this window and try again.</p>
+                </body>
+            </html>
+            """)
+        apple_oauth_states[state]["used"] = True
+    
+    try:
+        import jwt as pyjwt
+        
+        # Decode the ID token (Apple provides it directly in form_post mode)
+        # For production, validate signature against Apple's JWKS
+        decoded = pyjwt.decode(id_token, options={"verify_signature": False})
+        
+        apple_user_id = decoded.get("sub")
+        email = decoded.get("email")
+        
+        if not apple_user_id:
+            raise ValueError("No user ID in token")
+        
+        # Parse user data if provided (first-time login only)
+        full_name = "Apple User"
+        if user_data_str:
+            try:
+                import json
+                user_info = json.loads(user_data_str)
+                name_info = user_info.get("name", {})
+                first_name = name_info.get("firstName", "")
+                last_name = name_info.get("lastName", "")
+                if first_name and last_name:
+                    full_name = f"{first_name} {last_name}"
+                elif first_name:
+                    full_name = first_name
+            except (json.JSONDecodeError, KeyError, TypeError):
+                pass
+        
+        # Check if user exists
+        user_doc = await db.users.find_one({"apple_id": apple_user_id}, {"_id": 0})
+        
+        if user_doc:
+            # Update last login
+            await db.users.update_one(
+                {"apple_id": apple_user_id},
+                {"$set": {"last_login": datetime.now(timezone.utc).isoformat()}}
+            )
+            user_id = user_doc["id"]
+            user_email = user_doc.get("email", email)
+            user_name = user_doc.get("name", full_name)
+        else:
+            # Create new user
+            if not email:
+                email = f"{apple_user_id}@privaterelay.appleid.com"
+            
+            new_user = User(
+                email=email,
+                name=full_name,
+                picture=""
+            )
+            user_dict = new_user.model_dump()
+            user_dict["apple_id"] = apple_user_id
+            user_dict["last_login"] = datetime.now(timezone.utc).isoformat()
+            user_dict["created_at"] = user_dict["created_at"].isoformat()
+            await db.users.insert_one(user_dict)
+            user_id = new_user.id
+            user_email = email
+            user_name = full_name
+        
+        # Create session token
+        session_token = str(uuid.uuid4())
+        expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+        
+        session = UserSession(
+            user_id=user_id,
+            session_token=session_token,
+            expires_at=expires_at
+        )
+        session_dict = session.model_dump()
+        session_dict["expires_at"] = session_dict["expires_at"].isoformat()
+        session_dict["created_at"] = session_dict["created_at"].isoformat()
+        await db.user_sessions.insert_one(session_dict)
+        
+        logging.info(f"Apple web auth successful for user: {user_email}")
+        
+        # Return HTML that redirects to the app with the session token
+        # Using a custom URL scheme to return to the Capacitor app
+        return HTMLResponse(content=f"""
+        <html>
+            <head>
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <style>
+                    body {{
+                        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        min-height: 100vh;
+                        margin: 0;
+                        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+                        color: white;
+                    }}
+                    .loader {{
+                        width: 50px;
+                        height: 50px;
+                        border: 4px solid rgba(239, 68, 68, 0.3);
+                        border-top: 4px solid #ef4444;
+                        border-radius: 50%;
+                        animation: spin 1s linear infinite;
+                        margin-bottom: 20px;
+                    }}
+                    @keyframes spin {{
+                        0% {{ transform: rotate(0deg); }}
+                        100% {{ transform: rotate(360deg); }}
+                    }}
+                    h2 {{ color: #ef4444; margin-bottom: 10px; }}
+                    p {{ color: #ccc; }}
+                </style>
+            </head>
+            <body>
+                <div class="loader"></div>
+                <h2>Success!</h2>
+                <p>Redirecting to WatchWhistle...</p>
+                <script>
+                    // Store the session data
+                    const sessionData = {{
+                        session_token: '{session_token}',
+                        user_id: '{user_id}',
+                        email: '{user_email}',
+                        name: '{user_name}'
+                    }};
+                    
+                    // Try multiple methods to return to the app
+                    function redirectToApp() {{
+                        // Method 1: Custom URL scheme (for Capacitor)
+                        const appUrl = 'watchwhistle://auth/success?session_token=' + 
+                            encodeURIComponent(sessionData.session_token);
+                        
+                        // Method 2: Universal link
+                        const universalUrl = 'https://watchwhistle-production.up.railway.app/auth/complete?' +
+                            'session_token=' + encodeURIComponent(sessionData.session_token);
+                        
+                        // Try app URL first
+                        window.location.href = appUrl;
+                        
+                        // Fallback: show manual instructions after delay
+                        setTimeout(function() {{
+                            document.body.innerHTML = `
+                                <div style="text-align: center; padding: 40px;">
+                                    <h2 style="color: #22c55e;">✓ Signed In Successfully!</h2>
+                                    <p style="color: #ccc;">Please return to the WatchWhistle app.</p>
+                                    <p style="color: #888; font-size: 14px; margin-top: 20px;">
+                                        If the app doesn't open automatically,<br>
+                                        please close this browser and open WatchWhistle.
+                                    </p>
+                                </div>
+                            `;
+                        }}, 3000);
+                    }}
+                    
+                    // Execute redirect
+                    redirectToApp();
+                </script>
+            </body>
+        </html>
+        """)
+        
+    except Exception as e:
+        logging.error(f"Apple web callback error: {e}")
+        return HTMLResponse(content=f"""
+        <html>
+            <head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+            <body style="font-family: -apple-system, sans-serif; padding: 40px; text-align: center;">
+                <h2>Sign In Failed</h2>
+                <p>An error occurred during sign in.</p>
+                <p style="color: #888; font-size: 12px;">{str(e)}</p>
+                <p>Please close this window and try again.</p>
+            </body>
+        </html>
+        """)
 
 @api_router.post("/auth/demo")
 async def demo_login(response: Response):
