@@ -20,10 +20,13 @@ const LandingPage = () => {
     try {
       const { SignInWithApple } = await import('@capacitor-community/apple-sign-in');
       
-      const result = await SignInWithApple.authorize({ 
-        clientId: 'com.tillywatchwhistle', 
+      // For native iOS, only scopes are needed - clientId is for web only
+      const options = {
         scopes: 'email name'
-      });
+      };
+      
+      console.log('Calling SignInWithApple.authorize with options:', options);
+      const result = await SignInWithApple.authorize(options);
       
       console.log('Apple Sign In result:', result);
       
