@@ -1,232 +1,196 @@
 <analysis>**original_problem_statement:**
-The user wants to build a full-stack application named WatchWhistle that notifies users of new episodes for their favorite TV shows. The primary goal is to get the application approved for submission to the Apple App Store. The app has faced multiple rejections from Apple, primarily due to login flow issues and reviewers being unable to test the app's functionality.
+The user wants to build a full-stack application named WatchWhistle that notifies users of new episodes for their favorite TV shows. The primary goal is to get the application approved for submission to the Apple App Store. The app has faced multiple rejections from Apple, primarily due to login flow issues where reviewers encounter Network Error and cannot test the app's functionality. Apple has also provided feedback that the app should not redirect to an external web browser for login and has suggested implementing the Safari View Controller API.
 
 **PRODUCT REQUIREMENTS:**
 - **Data Source:** TV Maze API.
-- **Authentication:** Emergent-based Google social login, Sign In with Apple, and a newly-added Demo Account login for reviewers.
+- **Authentication:** A working Sign In with Apple and a Demo Account login are required for App Store review. The Google Sign-In has been removed.
 - **Core Features:**
     - Search for TV shows and add them to a favorites list.
     - View upcoming shows and episodes.
     - Mark episodes as watched.
-    - Receive in-app notifications for new episodes.
     - Rate shows.
-    - Account Deletion feature (Apple requirement).
-- **Design & UI:** A red-themed UI with a movie theater background on the landing page.
-- **Native App & PWA:** The application must be a downloadable native Capacitor app for iPhones and must be mobile-responsive.
+    - Account Deletion feature.
+- **Design & UI:** A red-themed UI.
+- **Native App:** The application must be a downloadable native Capacitor app for iPhones and iPads.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack application with a FastAPI backend and a React/Capacitor frontend. The codebase has been modified to address Apple's feedback by adding an Account Deletion feature and a Try Demo Account button to simplify the review process. However, the user is completely blocked by severe and persistent local environment issues on their Mac. They are unable to create a successful build that reflects the latest code changes, as their simulators and physical devices consistently load old, cached versions of the app, or the build process fails entirely.
+A full-stack application with a FastAPI backend and a React/Capacitor frontend. The backend is successfully deployed on Railway, providing a stable production URL, and connected to a MongoDB Atlas database. The frontend code has been updated to remove the Google Sign-In and focus on fixing the Sign In with Apple and Demo Account features. However, the app continues to be rejected by Apple due to the same login failures. The core of the problem is that the user's local builds are not correctly picking up the latest environment variable changes, causing the app to point to an old, non-functional backend URL, which results in a Network Error during Apple's review.
 
 **Last working item**:
-- **Last item agent was working:** The agent was attempting to resolve a critical issue where the user's local builds were not reflecting the latest code changes. Specifically, the newly added Try Demo Account button was not working, and the Preview App button was incorrectly redirecting. The root cause was identified as an extremely persistent caching issue within the user's Xcode, simulator, and project build artifacts, compounded by potential local environment inconsistencies (e.g., Node.js version, corrupted dependencies). The user became very frustrated after numerous unsuccessful attempts to clean the cache and rebuild the project.
+- **Last item agent was working:** The agent was trying to debug why both Sign In with Apple and Demo Account were failing for the user after a rebuild. The agent identified that the application was, once again, attempting to connect to an old preview URL () instead of the correct production Railway URL. This was caused by the  file reverting to an old state or the build process using a cached, incorrect version. The agent corrected the  file one more time.
 - **Status:** BLOCKED
 - **Agent Testing Done:** Y
-- **Which testing method agent to use?** N/A. The immediate and critical task is to fix the user's local build environment. No functional testing is possible until the user can build and run the correct version of the app.
+- **Which testing method agent to use?** Frontend testing agent. The primary issue is the frontend build process and its failure to correctly embed the production backend URL, along with the faulty native Sign In with Apple implementation. Testing must focus on verifying the final app binary's configuration and runtime behavior in a native iOS environment.
+- **User Testing Done:** Y
 
 **All Pending/In progress Issue list**:
-- **Issue 1:  Local Build & Caching Hell on User's Mac (P0 - CRITICAL BLOCKER)**
-  - **Description:** The user is completely unable to build and run the latest version of the app. Every attempt results in old, cached apps appearing on simulators and physical devices, or the build process fails. This has led to significant user frustration and a complete halt in progress. The user's local project folder () is likely in a corrupted state.
-  - **Attempted fixes:** Numerous attempts to clear caches have failed. This includes deleting , , and  directories; running  to wipe simulators; clearing Xcode's ; and using HEAD is now at 0b37b70 Auto-generated changes to sync code. These piecemeal fixes have not worked.
-  - **Next debug checklist:**
-    1.  Acknowledge the user's frustration and propose a scorched earth reset as a definitive solution.
-    2.  Guide the user to **delete the entire project folder** ().
-    3.  Guide them to **clone the repository fresh** from GitHub.
-    4.  Guide them through a single, clean, step-by-step build process from the new folder.
-    5.  As a precaution, check the user's Node.js version (v20.20.0). An earlier build failed due to a Node v24 incompatibility. If problems persist, suggest using  to switch to a stable LTS version like v18 or v20.
-    6.  Insist on testing on a **physical device** first to bypass simulator issues.
-  - **Why fix this issue and what will be achieved with the fix?** This is the only way to unblock the user. All other tasks are irrelevant until the user can build the app.
-  - **Status:** BLOCKED
+- **Issue 1:  Persistent Network Error in App Store Review (P0 - CRITICAL BLOCKER)**
+  - **Description:** Apple reviewers consistently get a Network Error when testing the Demo Account login, which is the primary reason for rejection. This is caused by the user's Xcode build process failing to use the updated  from the  file, resulting in the app trying to call a dead preview server instead of the live Railway server.
+  - **Status:** IN PROGRESS
   - **Is recurring issue?** Y
-  - **Should Test frontend/backend/both after fix?** Both, starting with the frontend build process.
 
-- **Issue 2:  Functional Bugs: Demo Login Fails & Preview Redirects (P1)**
-  - **Description:** On the rare occasions a build seems to partially work, the Try Demo Account button fails, and the Preview App button incorrectly redirects to the Google login page.
-  - **Attempted fixes:** The agent corrected the  instance in  to ensure credentials were being sent correctly. These fixes are present in the latest code on GitHub but have not been successfully built or tested by the user due to Issue 1.
-  - **Next debug checklist:**
-    1.  This issue can only be addressed after Issue 1 is resolved.
-    2.  Once a clean build is running on a physical device, test the Try Demo Account button.
-    3.  If it fails, connect the device to the Mac and use Safari's Develop menu to inspect the web console for runtime JavaScript errors.
-  - **Why fix this issue and what will be achieved with the fix?** This provides Apple reviewers with the easy testing path they require, increasing the chances of app approval.
-  - **Status:** BLOCKED
+- **Issue 2:  Sign In with Apple is Non-Functional (P0 - CRITICAL BLOCKER)**
+  - **Description:** Sign In with Apple consistently fails with . This is a mandatory feature for apps offering social logins and a hard blocker for App Store approval.
+  - **Status:** IN PROGRESS
   - **Is recurring issue?** Y
-  - **Blocked on other issue:** Issue 1: Local Build & Caching Hell on User's Mac
+
+- **Issue 3: Poor User Experience During Login (P1 - Apple Feedback)**
+  - **Description:** Apple has explicitly stated that taking the user to a default web browser for login provides a poor user experience. They have recommended using the  API to handle web content within the app.
+  - **Status:** NOT STARTED
+  - **Is recurring issue?** N
+
+**Issues Detail:**
+- **Issue 1: Persistent Network Error in App Store Review**
+    - **Attempted fixes:** The backend was moved to a stable Railway deployment. The  file was repeatedly corrected. CORS policies were updated. App Transport Security (ATS) settings were added to . None of these server-side or config fixes have worked because the client-side build is stale.
+    - **Next debug checklist:**
+        1. Add a  to .
+        2. Guide the user to perform a full clean build: , , , , .
+        3. Instruct the user to run the app in the Xcode simulator and check the Xcode console for the logged URL to **confirm** it's the correct Railway URL before submitting to Apple.
+    - **Why fix this issue and what will be achieved with the fix?** This will resolve the Network Error and allow the demo account to function for reviewers, which is essential for app approval.
+- **Issue 2: Sign In with Apple is Non-Functional**
+    - **Attempted fixes:** The backend Apple auth endpoint was corrected. The frontend call was modified. Xcode project settings were reviewed. These fixes have not resolved the .
+    - **Next debug checklist:**
+        1. Investigate and implement Apple's  suggestion (see Issue 3). The current native plugin () is unreliable; a web-based flow handled within an in-app browser is the most promising solution.
+        2. Create a new backend endpoint (e.g., ) that initiates the Apple OAuth web flow redirect.
+        3. Create a callback endpoint (e.g., ) to handle the response from Apple, validate the token, and create a user session.
+        4. Modify the frontend to open the  URL using the  plugin.
+    - **Why fix this issue and what will be achieved with the fix?** This is a mandatory requirement for App Store approval.
+- **Issue 3: Poor User Experience During Login**
+    - **Attempted fixes:** None.
+    - **Next debug checklist:** This issue is directly addressed by the proposed fix for Issue 2. The solution is to use the  plugin to open authentication URLs within the app, providing the  experience Apple requires.
+    - **Why fix this issue and what will be achieved with the fix?** To comply with Apple's design guidelines and improve the chances of approval.
 
 **In progress Task List**:
-- None. All work is blocked.
+- None. All focus is on resolving the critical blockers for App Store submission.
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks:**
-  - **(P0)** Guide the user through a complete scorched earth reset of their local project to fix the build environment.
-  - **(P1)** Confirm the Demo Account and Preview App buttons work correctly on a physical device.
-  - **(P1)** Guide the user to archive and resubmit the fully working build to App Store Connect.
-  - **(P2)** Add the correct app icon during the final build process.
+  - **(P0)** Refactor the entire authentication flow to use an in-app browser () as per Apple's recommendation. This is the top priority.
 - **Future Tasks:**
-  - Fully implement and enable Sign In with Apple.
-  - Redesign the UI to feel more native and less web-like to address previous Apple feedback.
+  - Re-implement Google Sign-In using the new in-app browser method.
+  - Address previous Apple feedback about making the UI feel more native.
+  - Add push notifications for new episodes.
 
 **Completed work in this session**
-- Added an  endpoint to  for one-click demo account login.
-- Added an account deletion feature ( endpoint and UI in ).
-- Updated  to include four buttons: Google Login, Apple Sign In (iOS only), Preview App, and the new Try Demo Account button.
-- Removed a redundant Sign In button from the top navigation bar.
-- Corrected an issue where  was being used incorrectly without credentials, which was likely causing the demo login to fail.
-- Removed all Free marketing text from  per user request.
+- Successfully deployed the backend to a stable **Railway** server.
+- Connected the backend to a cloud-hosted **MongoDB Atlas** database.
+- Repeatedly attempted to fix the Demo Login and Sign In with Apple flows by modifying backend CORS policies, frontend  files, and native iOS configurations.
+- Removed the Google Sign In button from the UI to focus on the Apple-required login methods.
+- Guided the user through dozens of local build, clean, and sync cycles to combat persistent caching issues.
 
 **Earlier issues found/mentioned but not fixed**
-- The core issue of this session is the user's broken local build environment, which has not been resolved.
+- The fundamental issues of Network Error on review and a non-functional Sign In with Apple have persisted across multiple forks and sessions. The root causes (stale builds and a flawed native plugin implementation) have been identified but not definitively solved.
 
 **Known issue recurrence from previous fork**
-- Xcode code signing issues are a known, major recurring problem that will likely surface again when the user attempts to archive the app for App Store submission.
+  - **Local Build & Caching Hell:** The user's local environment is highly susceptible to caching problems. npm <command>
+
+Usage:
+
+npm install        install all the dependencies in your project
+npm install <foo>  add the <foo> dependency to your project
+npm test           run this project's tests
+npm run <foo>      run the script named <foo>
+npm <command> -h   quick help on <command>
+npm -l             display usage info for all commands
+npm help <term>    search for help on <term>
+npm help npm       more involved overview
+
+All commands:
+
+    access, adduser, audit, bugs, cache, ci, completion,
+    config, dedupe, deprecate, diff, dist-tag, docs, doctor,
+    edit, exec, explain, explore, find-dupes, fund, get, help,
+    help-search, hook, init, install, install-ci-test,
+    install-test, link, ll, login, logout, ls, org, outdated,
+    owner, pack, ping, pkg, prefix, profile, prune, publish,
+    query, rebuild, repo, restart, root, run-script, sbom,
+    search, set, shrinkwrap, star, stars, start, stop, team,
+    test, token, uninstall, unpublish, unstar, update, version,
+    view, whoami
+
+Specify configs in the ini-formatted file:
+    /root/.npmrc
+or on the command line via: npm <command> --key=value
+
+More configuration info: npm help config
+Configuration fields: npm help 7 config
+
+npm@10.8.2 /usr/lib/node_modules/npm, , and  builds frequently use stale code, particularly from the  file. This is the primary recurring technical blocker.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Frontend:** React, Capacitor
+- **Frontend:** React, Capacitor, Axios
 - **Backend:** FastAPI
-- **Database:** MongoDB
-- **Build Tools:** The entire session revolved around debugging the user's local build toolchain: npm <command>
-
-Usage:
-
-npm install        install all the dependencies in your project
-npm install <foo>  add the <foo> dependency to your project
-npm test           run this project's tests
-npm run <foo>      run the script named <foo>
-npm <command> -h   quick help on <command>
-npm -l             display usage info for all commands
-npm help <term>    search for help on <term>
-npm help npm       more involved overview
-
-All commands:
-
-    access, adduser, audit, bugs, cache, ci, completion,
-    config, dedupe, deprecate, diff, dist-tag, docs, doctor,
-    edit, exec, explain, explore, find-dupes, fund, get, help,
-    help-search, hook, init, install, install-ci-test,
-    install-test, link, ll, login, logout, ls, org, outdated,
-    owner, pack, ping, pkg, prefix, profile, prune, publish,
-    query, rebuild, repo, restart, root, run-script, sbom,
-    search, set, shrinkwrap, star, stars, start, stop, team,
-    test, token, uninstall, unpublish, unstar, update, version,
-    view, whoami
-
-Specify configs in the ini-formatted file:
-    /root/.npmrc
-or on the command line via: npm <command> --key=value
-
-More configuration info: npm help config
-Configuration fields: npm help 7 config
-
-npm@10.8.2 /usr/lib/node_modules/npm, , , and .
-- **Primary Blocker:** Aggressive and persistent caching on the user's local machine across multiple layers (npm, Xcode, Simulator, physical device).
+- **Database:** MongoDB Atlas
+- **Deployment:** The backend is deployed on **Railway**. The frontend is a native **Capacitor** app built with **Xcode**.
+- **Authentication:** Token-based (JWT in ), Demo Account, and a broken native Sign In with Apple.
 
 **key DB schema**
-- **users:** Stores user profile information.
-- **favorites:** Stores user's favorite shows (, ).
-- **watched_episodes:** Tracks watched episodes (, ).
-- **notifications:** Stores new episode notifications ().
+  - **users:** {email, name, apple_user_id}
+  - **user_sessions:** {user_id, session_token, expires_at}
+  - **favorites:** {user_id, show_id}
 
 **changes in tech stack**
-- No significant changes, but the session involved extensive debugging of existing stack components, especially npm <command>
-
-Usage:
-
-npm install        install all the dependencies in your project
-npm install <foo>  add the <foo> dependency to your project
-npm test           run this project's tests
-npm run <foo>      run the script named <foo>
-npm <command> -h   quick help on <command>
-npm -l             display usage info for all commands
-npm help <term>    search for help on <term>
-npm help npm       more involved overview
-
-All commands:
-
-    access, adduser, audit, bugs, cache, ci, completion,
-    config, dedupe, deprecate, diff, dist-tag, docs, doctor,
-    edit, exec, explain, explore, find-dupes, fund, get, help,
-    help-search, hook, init, install, install-ci-test,
-    install-test, link, ll, login, logout, ls, org, outdated,
-    owner, pack, ping, pkg, prefix, profile, prune, publish,
-    query, rebuild, repo, restart, root, run-script, sbom,
-    search, set, shrinkwrap, star, stars, start, stop, team,
-    test, token, uninstall, unpublish, unstar, update, version,
-    view, whoami
-
-Specify configs in the ini-formatted file:
-    /root/.npmrc
-or on the command line via: npm <command> --key=value
-
-More configuration info: npm help config
-Configuration fields: npm help 7 config
-
-npm@10.8.2 /usr/lib/node_modules/npm (dependency conflicts) and  (deployment target issues).
+  - **Backend Hosting:** Migrated from Emergent's temporary preview environment to a persistent **Railway deployment**.
+  - **Database:** Migrated from a local MongoDB instance to a cloud-hosted **MongoDB Atlas cluster**.
 
 **All files of reference**
-- : The root of the user's local project, which is in a corrupted state.
-- : Contains the logic for all login buttons. The latest version uses a credentialed  instance.
-- : Logic was simplified to prevent accidental redirects.
-- : Contains the new  and  endpoints.
-- : The iOS deployment target was consistently updated to '16.0' to resolve dependency issues.
+- : Location of the broken login logic.
+- : **CRITICAL FILE.** Must point to the production Railway URL. Its failure to be included in builds is a major issue.
+- : Contains all API logic, including authentication and CORS.
+-  plugin: Not yet used, but will be essential for the next fix.
 
 **Areas that need refactoring**:
-- The user's entire local project directory needs to be deleted and cloned fresh to resolve the intractable caching and build issues.
+- The entire authentication flow in  and  needs to be refactored to use a web-based, in-app browser approach () instead of the failing native plugins and redirects.
 
 **key api endpoints**
-- : New endpoint for demo login.
-- : New endpoint for account deletion.
-- 
-- 
-- 
+- Production Backend: A new URL will be generated by Railway in the next session.
 - 
 - 
 
 **Critical Info for New Agent**
-- **The user is extremely frustrated.** Your first priority must be to acknowledge this and propose a new, decisive scorched earth reset plan. Do not repeat the previous piecemeal cache-clearing steps.
-- **THE PROBLEM IS THE USER'S LOCAL ENVIRONMENT.** The server-side code is correct, as verified by Safari tests. Focus all your energy on fixing the user's local build process.
-- The scorched earth plan:
-    1. Delete the entire local project folder.
-    2. Clone fresh from GitHub.
-    3. Erase all simulators and Xcode caches again.
-    4. Guide a single, clean build from scratch.
-- **Prioritize testing on a physical device** to bypass simulator caching. The user has already connected a device and enabled developer mode.
-- The user's Node.js version (v24) has caused issues before. If build problems persist after a full reset, be prepared to guide them on installing  and switching to a stable LTS version (e.g., v18 or v20).
+- **The user is extremely frustrated by repeated rejections.** Your first priority is to acknowledge this and propose a new, definitive strategy that directly addresses Apple's feedback.
+- **DO NOT REPEAT FAILED ATTEMPTS.** The current native  plugin approach is a dead end. Do not try to debug it further.
+- **NEW STRATEGY:** Pivot immediately to implementing Apple's suggestion: use the  plugin to open a web-based authentication flow within the app (Safari View Controller). This is the most likely path to success.
+- **VERIFY THE BUILD:** You **MUST** guide the user to verify that the final app build contains the correct production backend URL before they submit to Apple again. The easiest way is to  the URL in  and check the Xcode console output.
 
 **documents and test reports created in this job**
-- /app/memory/PRD.md
+  - /app/memory/PRD.md
 
 **Last 10 User Messages and any pending HUMAN messages**
-1. **User:** Tested on Safari, the demo button works. (Confirms server-side code is correct).
-2. **Agent:** Suggests a final, more thorough Xcode cache clean and rebuild.
-3. **User:** Still sees the same old app on the device. Frustrated.
-4. **Agent:** Acknowledges frustration, confirms code is safe in Git, and suggests leaving it for the night.
-5. **User:** Asks to restore to the version previously submitted to Apple.
-6. **Agent:** Provides git commands to reset to the submitted version but warns it lacks the necessary fixes.
-7. **User:** Confirms they want to add the demo button and remove a duplicate sign-in button before re-testing.
-8. **Agent:** Makes the changes and guides the user to save to GitHub.
-9. **User:** After a restart and another failed build-and-test cycle, reports the demo button fails and the preview button redirects incorrectly.
-10. **Agent:** After a long debugging chain, identifies the local built files are still incorrect/outdated and the session ends with the user blocked.
+1. **User:** App rejected again for Sign In with Apple not working. Asks if the  API suggestion from Apple can be implemented. (PENDING)
+2. **User:** Successfully submitted the app for review. (It was later rejected).
+3. **User:** The demo account is working again after the  file was fixed. Asks for notes for the App Store submission.
+4. **User:** The app is still using the old preview URL, causing Demo error: Network Error.
+5. **User:** Signing in for app requires a development team error persists when trying to run on a physical phone.
+6. **User:** Asks if the issue could be different Apple accounts on the laptop versus the phone.
+7. **User:** Reports Apple Sign In error: 1000.
+8. **User:** Confirms the Google Sign-In button is gone, but Apple Sign-In still doesn't work. Demo is working.
+9. **User:** Needs to accept the Xcode license agreement.
+10. **User:** Asks if he can rebuild now that the backend has been deployed to Railway.
 
 **Project Health Check:**
-- **Broken:** The user's local development environment is non-functional. They cannot build or test the latest version of the application due to deep-seated caching issues.
+- **Broken:** The application is in a non-shippable state and stuck in a rejection loop with the App Store. The core login functionality, a prerequisite for review, is non-functional in Apple's test environment.
 
 **3rd Party Integrations**
 - **TVMaze API:** For TV show data.
-- **Emergent Google Social Login:** Implemented via a redirect.
-- **Apple Sign In:** Partially implemented via .
-- **CocoaPods:** Manages iOS dependencies.
+- **Apple Sign In:** Currently implemented via  (Not working, needs replacement).
+- **Railway:** Backend hosting provider.
+- **MongoDB Atlas:** Cloud database provider.
 
 **Testing status**
-- **Testing agent used after significant changes:** NO
-- **Troubleshoot agent used after agent stuck in loop:** YES, extensively for the user's local environment.
-- **Test files created:** None.
-- **Known regressions:** The user perceives a regression because they are unable to build a working app, but the root cause is environmental, not a code regression.
+  - Testing agent used after significant changes: NO
+  - Troubleshoot agent used after agent stuck in loop: YES
+  - Test files created: None.
+  - Known regressions: Demo login functionality repeatedly breaks due to build/caching issues on the user's machine.
 
 **Credentials to test flow:**
-- A Try Demo Account button has been added, which should provide instant access for reviewers. No specific credentials are required for this flow.
+- Try Demo Account button.
+- Sign In with Apple button.
 
 **What agent forgot to execute**
-- The agent failed to break the user out of the local environment/caching doom loop. A more drastic scorched earth reset (deleting the entire project folder) should have been proposed earlier instead of repeating similar, less effective cache-clearing commands.</analysis>
+The agent did not act on Apple's direct feedback to implement the  API. Instead, they continued to debug the failing native plugin, wasting significant time and leading to another rejection. The agent also failed to establish a reliable process to verify that the user's final build contained the correct backend URL before submission.</analysis>

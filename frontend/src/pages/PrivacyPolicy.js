@@ -197,7 +197,7 @@ const PrivacyPolicy = () => {
           </p>
           <p>
             <strong>App:</strong> WatchWhistle<br/>
-            <strong>Website:</strong> https://shownotify-2.preview.emergentagent.com
+            <strong>Website:</strong> https://watchlist-signin.preview.emergentagent.com
           </p>
         </section>
       </div>
