@@ -25,6 +25,13 @@ try {
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// DEBUG: Log the backend URL on app startup - CHECK THIS IN XCODE CONSOLE!
+console.log('===========================================');
+console.log('🚀 WatchWhistle App Starting');
+console.log('📡 BACKEND_URL:', BACKEND_URL);
+console.log('📡 API Base:', API);
+console.log('===========================================');
+
 export const api = axios.create({
   baseURL: API,
   withCredentials: true,
