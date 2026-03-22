@@ -3,17 +3,24 @@
 ## Original Problem Statement
 Build a full-stack application named "WatchWhistle" that notifies users of new episodes for their favorite TV shows. The primary goal is to get the application approved for submission to the Apple App Store.
 
+## Current Status
+- **Multiple Apple rejections** addressed
+- **Railway backend** deployed for reliable access
+- **MongoDB Atlas** database configured
+- **Demo Account** working for testing
+- **Apple Sign In** implemented (configuration may need debugging)
+- **Google Sign In removed** per Apple feedback
+
 ## User Personas
 - TV show enthusiasts who want to track multiple shows
 - Users who want notifications when new episodes air
-- Apple App Store reviewers (need easy testing path)
+- Apple App Store reviewers (Demo Account for testing)
 
 ## Core Requirements
 - **Data Source:** TV Maze API
 - **Authentication:** 
-  - Emergent-based Google social login
-  - Sign In with Apple (iOS only) - fails gracefully with helpful message
-  - Demo Account login for reviewers (PRIMARY testing method)
+  - Sign In with Apple (iOS native)
+  - Demo Account login for reviewers
 - **Core Features:**
   - Search for TV shows and add to favorites
   - View upcoming episodes
@@ -22,91 +29,88 @@ Build a full-stack application named "WatchWhistle" that notifies users of new e
   - Rate shows
   - Account deletion (Apple requirement)
 - **Design:** Red-themed UI with movie theater background
-- **Platform:** Native Capacitor app for iOS (iPhone + iPad), mobile-responsive
+- **Platform:** Native Capacitor app for iOS (iPhone + iPad)
 
 ## Technical Architecture
 
 ### Frontend
 - React 19
 - Capacitor for iOS native app
-- Tailwind CSS
-- Lucide React icons
+- @capacitor-community/apple-sign-in for Apple Sign In
 - Axios for API calls
 
-### Backend
+### Backend (Railway)
 - FastAPI (Python)
-- MongoDB database
-- Hosted on Emergent preview server
+- URL: https://watchwhistle-production.up.railway.app
+- Endpoints prefixed with /api
+
+### Database (MongoDB Atlas)
+- Free tier (M0)
+- URL: mongodb+srv://watchwhistle:***@cluster0.etd3ykq.mongodb.net/
 
 ### Key Files
-- `/app/frontend/src/pages/LandingPage.js` - Login buttons (Google, Apple, Demo)
+- `/app/frontend/src/pages/LandingPage.js` - Login buttons (Apple, Demo)
 - `/app/frontend/src/pages/Dashboard.js` - Main app view with shows
 - `/app/frontend/src/pages/SearchShows.js` - Search functionality
 - `/app/backend/server.py` - API endpoints
 
 ### Key API Endpoints
 - `POST /api/auth/demo` - Demo account login
-- `POST /api/auth/google` - Google OAuth
-- `POST /api/auth/apple-signin` - Apple Sign In
+- `POST /api/auth/apple` - Apple Sign In verification
 - `DELETE /api/users/me` - Account deletion
 - `GET /api/shows/favorites` - Get user's favorite shows
 - `GET /api/episodes/upcoming` - Get upcoming episodes
 
 ## App Store Submission History
 
-### Build 14 - February 6, 2026 (Current)
-- Fixed CORS configuration for mobile apps
-- Added App Transport Security settings
-- Tested on iPad Air 11-inch (Apple's test device)
-- Demo Account working on all devices
+### Latest Submission (March 2026)
+- Removed Google Sign In (Apple complained about external browser)
+- Added Sign In with Apple (native)
+- Demo Account working
+- Railway backend deployed
 
-### Build 13 - January 30, 2026
-- Rejected: Network Error on Apple's test devices
-- Issue: CORS was set to `*` with credentials (not allowed)
+### Previous Rejections
+- Network errors (Emergent preview server not accessible from Apple)
+- Apple Sign In not working
+- Google Sign In using external browser
 
-### Previous Builds
-- Multiple rejections due to login flow issues
-- Apple reviewers couldn't test app functionality
+## Environment Configuration
 
-## What's Been Implemented
+### Railway Environment Variables
+- `MONGO_URL`: MongoDB Atlas connection string
+- `DB_NAME`: watchwhistle
+- `CORS_ORIGINS`: capacitor://localhost,https://watchwhistle-production.up.railway.app,...
 
-### February 6, 2026
-- ✅ Fixed CORS (specific origins instead of *)
-- ✅ Added App Transport Security to Info.plist
-- ✅ Updated Capacitor config for network navigation
-- ✅ Tested on iPad Air 11-inch simulator
-- ✅ Submitted Build 14
+### Frontend .env
+- `REACT_APP_BACKEND_URL`: https://watchwhistle-production.up.railway.app
 
-### January 30, 2026
-- ✅ Fixed Node.js version issues (nvm, Node 20 LTS)
-- ✅ Resolved npm dependency conflicts
-- ✅ Implemented localStorage token auth for Capacitor
-- ✅ Demo Account button working
-- ✅ Apple Sign In button with graceful error handling
-- ✅ Visible Sign Out button on Dashboard
-
-## Known Issues / Future Work
-- Sign In with Apple needs full backend implementation
-- UI could be more "native" feeling
-- Push notifications not yet implemented
+## Known Issues
+- Apple Sign In shows error 1000 on simulator (expected - simulators don't fully support it)
+- Apple Sign In may need additional configuration if it fails on Apple's review devices
 
 ## Database Schema
-- **users:** User profiles
+- **users:** User profiles (id, email, name, picture, created_at)
 - **favorites:** User's favorite shows (user_id, show_id)
 - **watched_episodes:** Tracked episodes (user_id, episode_id)
 - **notifications:** New episode notifications (user_id)
 - **user_sessions:** Authentication sessions
 
-## Environment Setup Notes
-- Node.js 20+ required (use nvm)
-- `.npmrc` with `legacy-peer-deps=true` for dependency resolution
-- CORS origins: capacitor://localhost, ionic://localhost, file://, etc.
-- Token stored in localStorage for native app auth
-- App Transport Security allows arbitrary loads
-
-## App Store Review Notes Template
+## Review Notes for Apple
 ```
-Demo Account tested and working on iPad Air 11-inch. 
-Tap the green "Try Demo Account" button for instant access to all features. 
-No login required.
+Testing Instructions:
+
+This app requires an active internet connection.
+
+Recommended testing method: Tap the green "Try Demo Account" button for instant access to all features without requiring sign-in.
+
+Sign in with Apple: Available for users who prefer to use their Apple ID.
+
+Features to test:
+- Search and add TV shows to your watchlist
+- View upcoming episodes
+- Mark episodes as watched
+- Rate shows
+- Sign out (X button, top right)
+
+Backend hosted on Railway (watchwhistle-production.up.railway.app).
 ```
